@@ -17,12 +17,14 @@ An implementation of a generic TALES engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.3 $'[11:-2]
+__version__ = '$Revision: 1.4 $'[11:-2]
 
 import re
 import sys
 from types import StringTypes
 
+from zope.proxy import proxy_compatible_isinstance as isinstance_ex
+from zope.proxy.context.wrapper import getbaseobject
 from zope.pagetemplate import iterator
 from zope.pagetemplate import safemapping
 
@@ -278,8 +280,9 @@ class Context:
         text = self.evaluate(expr)
         if text is _default or text is None:
             return text
-        if isinstance(text, StringTypes):
-            return text
+        if isinstance_ex(text, StringTypes):
+            # text could be a proxied/wrapped object
+            return getbaseobject(text)
         return unicode(text)
 
     def evaluateStructure(self, expr):
