@@ -16,7 +16,6 @@
 $Id$
 """
 import re
-from types import StringTypes, TupleType
 
 from zope.interface import implements
 from zope.tales.tales import CompilerError
@@ -91,7 +90,7 @@ class SubPathExpr(object):
             # check for initial function
             raise CompilerError(
                 'Namespace function specified in first subpath element')
-        elif isinstance(first,StringTypes):
+        elif isinstance(first, basestring):
             # check for initial ?
             raise CompilerError(
                 'Dynamic name specified in first subpath element')
@@ -117,13 +116,13 @@ class SubPathExpr(object):
             ob = ob()
 
         for element in compiled_path:
-            if isinstance(element,TupleType):
+            if isinstance(element, tuple):
                 ob = self._traverser(ob, element, econtext)
-            elif isinstance(element,StringTypes):
+            elif isinstance(element, basestring):
                 val = vars[element]
                 # If the value isn't a string, assume it's a sequence
                 # of path names.
-                if isinstance(val,StringTypes):
+                if isinstance(val, basestring):
                     val = (val,)
                 ob = self._traverser(ob, val, econtext)
             elif callable(element):
@@ -298,8 +297,12 @@ class SimpleModuleImporter(object):
     """Minimal module importer with no security."""
 
     def __getitem__(self, module):
-        mod = __import__(module)
+        mod = self._get_toplevel_module(module)
         path = module.split('.')
         for name in path[1:]:
             mod = getattr(mod, name)
         return mod
+
+    def _get_toplevel_module(self, module):
+        # This can be overridden to add security proxies.
+        return __import__(module)
