@@ -15,10 +15,10 @@
 
 Each expression engine can have its own expression types and base names.
 
-$Id: engine.py,v 1.1 2003/04/14 12:15:51 matth Exp $
+$Id: engine.py,v 1.2 2003/05/01 19:35:50 faassen Exp $
 """
 
-from zope.tales.tales import ExpressionEngine, RegistrationError
+from zope.tales.tales import ExpressionEngine
 from zope.tales.expressions import PathExpr, StringExpr, NotExpr, DeferExpr
 from zope.tales.expressions import SimpleModuleImporter
 from zope.tales.pythonexpr import PythonExpr

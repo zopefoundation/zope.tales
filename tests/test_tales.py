@@ -11,8 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import os
-import sys
 import unittest
 
 from zope.tales import tales

@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import os, sys, unittest
+import unittest
 
 from zope.tales.engine import Engine
 
