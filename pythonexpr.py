@@ -20,12 +20,15 @@ class PythonExpr(object):
     def __init__(self, name, expr, engine):
         text = ' '.join(expr.splitlines()).strip()
         self.text = text
-        # The next line can legally raise SyntaxError.
         try:
-            self._code = code = compile(text, '<string>', 'eval')
+            code = self._compile(text, '<string>')
         except SyntaxError, e:
             raise engine.getCompilerError()(str(e))
+        self._code = code
         self._varnames = code.co_names
+
+    def _compile(self, text, filename):
+        return compile(text, filename, 'eval')
 
     def _bind_used_names(self, econtext, builtins):
         # Bind template variables
