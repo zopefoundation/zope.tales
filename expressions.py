@@ -13,7 +13,7 @@
 ##############################################################################
 """Basic Page Template expression types.
 
-$Id: expressions.py,v 1.6 2003/09/16 22:11:26 srichter Exp $
+$Id: expressions.py,v 1.7 2003/11/05 19:38:13 evan Exp $
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
@@ -99,7 +99,7 @@ class SubPathExpr:
             raise CompilerError(
                 'Dynamic name specified in first subpath element')
 
-        if not _valid_name(base):
+        if base and not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % element
         self._base = base
         compiledpath[0]=first[1:]
@@ -112,7 +112,7 @@ class SubPathExpr:
         compiled_path = self._compiled_path
 
         base = self._base
-        if base == 'CONTEXTS':  # Special base name
+        if base == 'CONTEXTS' or not base:  # Special base name
             ob = econtext.contexts
         else:
             ob = vars[base]
