@@ -22,32 +22,43 @@ class Data:
 
     def __repr__(self): return self.name
 
+    __str__ = __repr__
+
 
 def dict(**kw):
     return kw
 
 
-class ExpressionTests(unittest.TestCase):
+class ExpressionTestBase(unittest.TestCase):
 
     def setUp(self):
         # Test expression compilation
-        self.context = Data(
-            vars = dict(
-              x = Data(
+        d = Data(
                  name = 'xander',
                  y = Data(
                     name = 'yikes',
                     z = Data(name = 'zope')
                     )
-                 ),
+                 )
+        at = Data(
+                  name = 'yikes',
+                  _d = d
+                 )
+        self.context = Data(
+            vars = dict(
+              x = d,
               y = Data(z = 3),
               b = 'boot',
               B = 2,
+              adapterTest = at,
+              dynamic = 'z',
               )
             )
 
-
         self.engine = Engine
+
+
+class ExpressionTests(ExpressionTestBase):        
 
     def testSimple(self):
         expr = self.engine.compile('x')
@@ -69,6 +80,21 @@ class ExpressionTests(unittest.TestCase):
         context=self.context
         self.assertEqual(expr(context), 'boot')
 
+    def testDynamic(self):
+        expr = self.engine.compile('x/y/?dynamic')
+        context=self.context
+        self.assertEqual(expr(context),context.vars['x'].y.z)
+        
+    def testBadInitalDynamic(self):
+        from zope.tales.tales import CompilerError
+        try:
+            self.engine.compile('?x')
+        except CompilerError,e:
+            self.assertEqual(e.args[0],
+                             'Dynamic name specified in first subpath element')
+        else:
+            self.fail('Engine accepted first subpath element as dynamic')
+            
     def testString(self):
         expr = self.engine.compile('string:Fred')
         context=self.context
@@ -94,9 +120,125 @@ class ExpressionTests(unittest.TestCase):
         context=self.context
         self.assertEqual(expr(context), 4)
 
-def test_suite():
-    return unittest.makeSuite(ExpressionTests)
+class FunctionTests(ExpressionTestBase):
 
+    def setUp(self):
+        ExpressionTestBase.setUp(self)
+
+        # a test namespace
+        class TestNameSpace:
+
+            def __init__(self, context):
+                self.context = context
+
+            def upper(self):
+                return str(self.context).upper()
+
+            def __getitem__(self,key):
+                if key=='jump':
+                    return self.context._d
+                raise KeyError,key
+            
+        self.TestNameSpace = TestNameSpace
+        self.engine.registerFunctionNamespace('namespace',self.TestNameSpace)
+
+    ## framework-ish tests
+        
+    def testGetFunctionNamespace(self):
+        self.assertEqual(
+            self.engine.getFunctionNamespace('namespace'),
+            self.TestNameSpace
+            )
+
+    def testGetFunctionNamespaceBadNamespace(self):
+        self.assertRaises(KeyError,
+                          self.engine.getFunctionNamespace,
+                          'badnamespace')
+
+    ## compile time tests
+
+    def testBadNamespace(self):
+        # namespace doesn't exist
+        from zope.tales.tales import CompilerError
+        try:
+            self.engine.compile('adapterTest/badnamespace:title')
+        except CompilerError,e:
+            self.assertEqual(e.args[0],'Unknown namespace "badnamespace"')
+        else:
+            self.fail('Engine accepted unknown namespace')
+
+    def testBadInitialNamespace(self):
+        # first segment in a path must not have modifier
+        from zope.tales.tales import CompilerError
+        self.assertRaises(CompilerError,
+                          self.engine.compile,
+                          'namespace:title')
+
+        # In an ideal world ther ewould be another test here to test
+        # that a nicer error was raised when you tried to use
+        # something like:
+        # standard:namespace:upper
+        # ...as a path.
+        # However, the compilation stage of PathExpr currently
+        # allows any expression type to be nested, so something like:
+        # standard:standard:context/attribute
+        # ...will work fine.
+        # When that is changed so that only expression types which
+        # should be nested are nestable, then the additional test
+        # should be added here.
+
+    def testInvalidNamespaceName(self):
+        from zope.tales.tales import CompilerError
+        try:
+            self.engine.compile('adapterTest/1foo:bar')
+        except CompilerError,e:
+            self.assertEqual(e.args[0],
+                             'Invalid namespace name "1foo"')
+        else:
+            self.fail('Engine accepted invalid namespace name')
+
+    def testInvalidFunctionName(self):
+        from zope.tales.tales import CompilerError
+        try:
+            self.engine.compile('adapterTest/foo:1bar')
+        except CompilerError,e:
+            self.assertEqual(e.args[0],
+                             'Invalid function name "1bar"')
+        else:
+            self.fail('Engine accepted invalid function name')
+
+
+    def testBadFunction(self):
+        from zope.tales.tales import CompilerError
+        # namespace is fine, adapter is not defined
+        try:
+            expr = self.engine.compile('adapterTest/namespace:title')
+            expr(self.context)
+        except (NameError,KeyError),e: 
+            self.assertEquals(e.args[0],'title')
+        else:
+            self.fail('Engine accepted unknown function')
+
+    ## runtime tests
+            
+    def testNormalFunction(self):
+        expr = self.engine.compile('adapterTest/namespace:upper')
+        self.assertEqual(expr(self.context), 'YIKES')
+
+    def testFunctionOnFunction(self):
+        expr = self.engine.compile('adapterTest/namespace:jump/namespace:upper')
+        self.assertEqual(expr(self.context), 'XANDER')
+
+    def testPathOnFunction(self):
+        expr = self.engine.compile('adapterTest/namespace:jump/y/z')
+        context = self.context
+        self.assertEqual(expr(context), context.vars['x'].y.z)
+
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(ExpressionTests),
+        unittest.makeSuite(FunctionTests),
+                        ))
 
 if __name__ == '__main__':
     unittest.TextTestRunner().run(test_suite())

@@ -17,7 +17,7 @@ An implementation of a generic TALES engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.1 $'[11:-2]
+__version__ = '$Revision: 1.2 $'[11:-2]
 
 import re
 import sys
@@ -100,7 +100,48 @@ class ExpressionEngine:
     def __init__(self):
         self.types = {}
         self.base_names = {}
+        self.namespaces = {}
         self.iteratorFactory = Iterator
+
+    def registerFunctionNamespace(self, namespacename, namespacecallable):
+        """Register a function namespace
+
+        namespace - a string containing the name of the namespace to 
+                    be registered
+
+        namespacecallable - a callable object which takes the following
+                            parameter:
+
+                            context - the object on which the functions 
+                                      provided by this namespace will
+                                      be called
+
+                            This callable should return an object which
+                            can be traversed to get the functions provided
+                            by the this namespace.
+
+        example:
+
+           class stringFuncs:
+
+              def __init__(self,context):
+                 self.context = str(context)
+
+              def upper(self):
+                 return self.context.upper()
+
+              def lower(self):
+                 return self.context.lower()
+            
+            engine.registerFunctionNamespace('string',stringFuncs)
+	"""
+	
+	self.namespaces[namespacename] = namespacecallable
+
+
+    def getFunctionNamespace(self, namespacename):
+        """ Returns the function namespace """
+        return self.namespaces[namespacename]
 
     def registerType(self, name, handler):
         if not _valid_name(name):
@@ -226,7 +267,7 @@ class Context:
         if isinstance(expression, str):
             expression = self._engine.compile(expression)
         __traceback_supplement__ = (
-            TALESTracebackSupplement, self, expression)
+           TALESTracebackSupplement, self, expression)
         return expression(self)
 
     evaluateValue = evaluate
