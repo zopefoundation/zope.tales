@@ -17,7 +17,7 @@ An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.13 $'[11:-2]
+__version__ = '$Revision: 1.14 $'[11:-2]
 
 import re
 
@@ -240,6 +240,28 @@ class Iterator(object):
         1
         """
         return self._nextIndex % 2
+
+    def parity(self):
+        """Return 'odd' or 'even' depending on the position's parity
+
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.parity()
+        'odd'
+        >>> int(bool(it.next()))
+        1
+        >>> it.parity()
+        'even'
+        >>> int(bool(it.next()))
+        1
+        >>> it.parity()
+        'odd'
+        """
+        if self._nextIndex % 2:
+            return 'odd'
+        return 'even'
 
     def letter(self, base=ord('a'), radix=26):
         """Get the iterator position as a lower-case letter
