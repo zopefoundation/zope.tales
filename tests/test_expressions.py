@@ -13,7 +13,7 @@
 ##############################################################################
 """Default TALES expression implementations tests.
 
-$Id: test_expressions.py,v 1.4 2003/09/16 22:11:27 srichter Exp $
+$Id: test_expressions.py,v 1.5 2003/09/19 10:27:11 srichter Exp $
 """
 import unittest
 
@@ -153,13 +153,13 @@ class FunctionTests(ExpressionTestBase):
                 raise KeyError,key
             
         self.TestNameSpace = TestNameSpace
-        self.engine.registerFunctionNamespace('namespace',self.TestNameSpace)
+        self.engine.registerFunctionNamespace('namespace', self.TestNameSpace)
 
     ## framework-ish tests
 
     def testSetEngine(self):
         expr = self.engine.compile('adapterTest/namespace:engine')
-        self.assertEqual(expr(self.context), self.engine)
+        self.assertEqual(expr(self.context), self.context)
                 
     def testGetFunctionNamespace(self):
         self.assertEqual(
