@@ -13,21 +13,29 @@
 ##############################################################################
 """TALES
 
-An implementation of a generic TALES engine
+An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.5 $'[11:-2]
+__version__ = '$Revision: 1.6 $'[11:-2]
 
 import re
 from types import StringTypes
 
 from zope.proxy import proxy_compatible_isinstance as isinstance_ex
 from zope.proxy.context.wrapper import getbaseobject
-from zope.pagetemplate import iterator
-from zope.pagetemplate import safemapping
+from zope.tales.interfaces import ITALESIterator
+from zope.interface import implements
 
-from zope.tal.interfaces import ITALESCompiler, ITALESEngine, ITALESErrorInfo
+try:
+    from zope import tal
+except ImportError:
+    tal = None
+
+if tal:
+    from zope.tal.interfaces import ITALExpressionCompiler, ITALExpressionEngine
+    from zope.tal.interfaces import ITALExpressionErrorInfo
+    from zope.tales.interfaces import ITALESIterator
 
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
@@ -52,28 +60,383 @@ _default = object()
 
 _marker = object()
 
+class Iterator(object):
+    """TALES Iterator
+    """
 
-class Iterator(iterator.Iterator):
+    if tal:
+        implements(ITALESIterator)
+
     def __init__(self, name, seq, context):
-        iterator.Iterator.__init__(self, seq)
-        self.name = name
-        self._context = context
+        """Construct an iterator
+        
+        Iterators are defined for a name, a sequence, or an iterator and a
+        context, where a context simply has a setLocal method:
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        
+        A local variable is not set until the iterator is used:
+        
+        >>> int("foo" in context.vars)
+        0
+        
+        We can create an iterator on an empty sequence:
+        
+        >>> it = Iterator('foo', (), context)
+        
+        An iterator works as well:
+        
+        >>> it = Iterator('foo', {"apple":1, "pear":1, "orange":1}, context)
+        >>> it = Iterator('foo', {}, context)
 
-    def __iter__(self):
-        return self
+        """ 
+        
+        self._seq = seq
+        self._iter = i = iter(seq)
+        self._nextIndex = 0
+        self._name = name
+        self._setLocal = context.setLocal
+
+        # This is tricky. We want to know if we are on the last item,
+        # but we can't know that without trying to get it. :(
+        self._last = False
+        try:
+            self._next = i.next()
+        except StopIteration:
+            self._done = 1
+        else:
+            self._done = 0
 
     def next(self):
-        if iterator.Iterator.next(self):
-            self._context.setLocal(self.name, self.seq[self.index])
-            return 1
-        return 0
+        """Advance the iterator, if possible.
+
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> context.vars['foo']
+        'apple'
+        >>> int(bool(it.next()))
+        1
+        >>> context.vars['foo']
+        'pear'
+        >>> int(bool(it.next()))
+        1
+        >>> context.vars['foo']
+        'orange'
+        >>> int(bool(it.next()))
+        0
+
+        >>> it = Iterator('foo', {"apple":1, "pear":1, "orange":1}, context)
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.next()))
+        0
+
+        >>> it = Iterator('foo', (), context)
+        >>> int(bool(it.next()))
+        0
+
+        >>> it = Iterator('foo', {}, context)
+        >>> int(bool(it.next()))
+        0
+
+
+        If we can advance, set a local variable to the new value.
+        """
+        # Note that these are *NOT* Python iterators!
+        if self._done:
+            return 0
+        self._item = v = self._next
+        try:
+            self._next = self._iter.next()
+        except StopIteration:
+            self._done = 1
+            self._last = 1
+
+        self._nextIndex += 1
+        self._setLocal(self._name, v)
+        return 1
+
+    def number(self):
+        """Get the iterator position
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.number()
+        1
+        >>> int(bool(it.next()))
+        1
+        >>> it.number()
+        2
+        >>> int(bool(it.next()))
+        1
+        >>> it.number()
+        3
+        """
+        return self._nextIndex
+
+    def even(self):
+        """Test whether the position is even
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.even()))
+        0
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.even()))
+        1
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.even()))
+        0
+        """
+        return not (self._nextIndex % 2)
+
+    def odd(self):
+        """Test whether the position is odd
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.odd()))
+        1
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.odd()))
+        0
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.odd()))
+        1
+        """
+        return self._nextIndex % 2
+
+    def letter(self, base=ord('a'), radix=26):
+        """Get the iterator position as a lower-case letter
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.letter()
+        'a'
+        >>> int(bool(it.next()))
+        1
+        >>> it.letter()
+        'b'
+        >>> int(bool(it.next()))
+        1
+        >>> it.letter()
+        'c'
+        """
+        index = self._nextIndex - 1
+        if index < 0:
+            raise TypeError("No iteration position") 
+        s = ''
+        while 1:
+            index, off = divmod(index, radix)
+            s = chr(base + off) + s
+            if not index: return s
+
+    def Letter(self):
+        """Get the iterator position as an upper-case letter
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.Letter()
+        'A'
+        >>> int(bool(it.next()))
+        1
+        >>> it.Letter()
+        'B'
+        >>> int(bool(it.next()))
+        1
+        >>> it.Letter()
+        'C'
+        """
+        return self.letter(base=ord('A'))
+
+    def Roman(self, rnvalues=(
+                    (1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),
+                    (100,'C'),(90,'XC'),(50,'L'),(40,'XL'),
+                    (10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')) ):
+        """Get the iterator position as an upper-case roman numeral
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.Roman()
+        'I'
+        >>> int(bool(it.next()))
+        1
+        >>> it.Roman()
+        'II'
+        >>> int(bool(it.next()))
+        1
+        >>> it.Roman()
+        'III'
+        """
+        n = self._nextIndex
+        s = ''
+        for v, r in rnvalues:
+            rct, n = divmod(n, v)
+            s = s + r * rct
+        return s
+
+    def roman(self):
+        """Get the iterator position as a lower-case roman numeral
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.roman()
+        'i'
+        >>> int(bool(it.next()))
+        1
+        >>> it.roman()
+        'ii'
+        >>> int(bool(it.next()))
+        1
+        >>> it.roman()
+        'iii'
+        """
+        return self.Roman().lower()
+
+    def start(self):
+        """Test whether the position is the first position
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.start()))
+        1
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.start()))
+        0
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.start()))
+        0
+
+        >>> it = Iterator('foo', {}, context)
+        >>> int(bool(it.start()))
+        0
+        >>> int(bool(it.next()))
+        0
+        >>> int(bool(it.start()))
+        0
+
+        """
+        return self._nextIndex == 1
+
+    def end(self):
+        """Test whether the position is the last position
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.end()))
+        0
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.end()))
+        0
+        >>> int(bool(it.next()))
+        1
+        >>> int(bool(it.end()))
+        1
+
+        >>> it = Iterator('foo', {}, context)
+        >>> int(bool(it.end()))
+        0
+        >>> int(bool(it.next()))
+        0
+        >>> int(bool(it.end()))
+        0
+        """
+        return self._last
+
+    def item(self):
+        """Get the iterator value
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.item()
+        'apple'
+        >>> int(bool(it.next()))
+        1
+        >>> it.item()
+        'pear'
+        >>> int(bool(it.next()))
+        1
+        >>> it.item()
+        'orange'
+
+        >>> it = Iterator('foo', {1:2}, context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.item()
+        1
+
+        """
+        return self._item
+
+    def length(self):
+        """Get the length of the iterator sequence
+        
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> it.length()
+        3
+
+        You can even get the length of a mapping:
+        
+        >>> it = Iterator('foo', {"apple":1, "pear":2, "orange":3}, context)
+        >>> it.length()
+        3
+
+        But you can't get the length if an iterable without a length
+        was provided:
+        
+        >>> it = Iterator('foo', iter({"apple":1, "pear":2}), context)
+        >>> it.length()
+        Traceback (most recent call last):
+        ...
+        TypeError: len() of unsized object
+
+        """
+        
+        return len(self._seq)
 
 
 
 class ErrorInfo:
     """Information about an exception passed to an on-error handler."""
 
-    __implements__ = ITALESErrorInfo
+
+    if tal:
+        __implements__ = ITALExpressionErrorInfo
 
     def __init__(self, err, position=(None, None)):
         if isinstance(err, Exception):
@@ -96,7 +459,8 @@ class ExpressionEngine:
     capable of holding state and evaluating compiled expressions.
     '''
 
-    __implements__ = ITALESCompiler
+    if tal:
+        __implements__ = ITALExpressionCompiler
 
     def __init__(self):
         self.types = {}
@@ -204,54 +568,60 @@ class Context:
     use to evaluate compiled expressions.
     '''
 
-    __implements__ = ITALESEngine
+    if tal:
+        __implements__ = ITALExpressionEngine
 
-    _context_class = safemapping.SafeMapping
     position = (None, None)
     source_file = None
 
     def __init__(self, engine, contexts):
         self._engine = engine
         self.contexts = contexts
-        contexts['nothing'] = None
-        contexts['default'] = _default
+        self.setContext('nothing', None)
+        self.setContext('default', _default)
 
         self.repeat_vars = rv = {}
         # Wrap this, as it is visible to restricted code
-        contexts['repeat'] = rep =  self._context_class(rv)
-        contexts['loop'] = rep # alias
+        self.setContext('repeat', rv)
+        self.setContext('loop', rv) # alias
 
-        self.global_vars = gv = contexts.copy()
-        self.local_vars = lv = {}
-        self.vars = self._context_class(gv, lv)
+        self.vars = vars = contexts.copy()
+        self._vars_stack = [vars]
 
         # Keep track of what needs to be popped as each scope ends.
         self._scope_stack = []
+        
+    def setContext(self, name, value):
+        # Hook to allow subclasses to do things like adding security proxies
+        self.contexts[name] = value
 
     def beginScope(self):
-        self._scope_stack.append([self.local_vars.copy()])
+        self.vars = vars = self.vars.copy()
+        self._vars_stack.append(vars)        
+        self._scope_stack.append([])
 
     def endScope(self):
+        self._vars_stack.pop()
+        self.vars = self._vars_stack[-1]
+
+        
         scope = self._scope_stack.pop()
-        self.local_vars = lv = scope[0]
-        v = self.vars
-        v._pop()
-        v._push(lv)
         # Pop repeat variables, if any
-        i = len(scope) - 1
+        i = len(scope) 
         while i:
+            i = i - 1
             name, value = scope[i]
             if value is None:
                 del self.repeat_vars[name]
             else:
                 self.repeat_vars[name] = value
-            i = i - 1
 
     def setLocal(self, name, value):
-        self.local_vars[name] = value
+        self.vars[name] = value
 
     def setGlobal(self, name, value):
-        self.global_vars[name] = value
+        for vars in self._vars_stack:
+            vars[name] = value
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
@@ -327,15 +697,3 @@ class TALESTracebackSupplement:
             from cgi import escape
             return '<b>Names:</b><pre>%s</pre>' % (escape(s))
         return None
-
-
-
-class SimpleExpr:
-    '''Simple example of an expression type handler'''
-    def __init__(self, name, expr, engine):
-        self._name = name
-        self._expr = expr
-    def __call__(self, econtext):
-        return self._name, self._expr
-    def __repr__(self):
-        return '<SimpleExpr %s %s>' % (self._name, `self._expr`)
