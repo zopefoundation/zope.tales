@@ -17,7 +17,7 @@ An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.8 $'[11:-2]
+__version__ = '$Revision: 1.9 $'[11:-2]
 
 import re
 from types import StringTypes
@@ -70,29 +70,29 @@ class Iterator(object):
 
     def __init__(self, name, seq, context):
         """Construct an iterator
-        
+
         Iterators are defined for a name, a sequence, or an iterator and a
         context, where a context simply has a setLocal method:
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        
+
         A local variable is not set until the iterator is used:
-        
+
         >>> int("foo" in context.vars)
         0
-        
+
         We can create an iterator on an empty sequence:
-        
+
         >>> it = Iterator('foo', (), context)
-        
+
         An iterator works as well:
-        
+
         >>> it = Iterator('foo', {"apple":1, "pear":1, "orange":1}, context)
         >>> it = Iterator('foo', {}, context)
 
-        """ 
-        
+        """
+
         self._seq = seq
         self._iter = i = iter(seq)
         self._nextIndex = 0
@@ -166,7 +166,7 @@ class Iterator(object):
 
     def number(self):
         """Get the iterator position
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -186,7 +186,7 @@ class Iterator(object):
 
     def even(self):
         """Test whether the position is even
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -206,7 +206,7 @@ class Iterator(object):
 
     def odd(self):
         """Test whether the position is odd
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -226,7 +226,7 @@ class Iterator(object):
 
     def letter(self, base=ord('a'), radix=26):
         """Get the iterator position as a lower-case letter
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -253,7 +253,7 @@ class Iterator(object):
 
     def Letter(self):
         """Get the iterator position as an upper-case letter
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -276,7 +276,7 @@ class Iterator(object):
                     (100,'C'),(90,'XC'),(50,'L'),(40,'XL'),
                     (10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')) ):
         """Get the iterator position as an upper-case roman numeral
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -301,7 +301,7 @@ class Iterator(object):
 
     def roman(self):
         """Get the iterator position as a lower-case roman numeral
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -321,7 +321,7 @@ class Iterator(object):
 
     def start(self):
         """Test whether the position is the first position
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -350,7 +350,7 @@ class Iterator(object):
 
     def end(self):
         """Test whether the position is the last position
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -378,7 +378,7 @@ class Iterator(object):
 
     def item(self):
         """Get the iterator value
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> int(bool(it.next()))
@@ -405,21 +405,21 @@ class Iterator(object):
 
     def length(self):
         """Get the length of the iterator sequence
-        
+
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
         >>> it.length()
         3
 
         You can even get the length of a mapping:
-        
+
         >>> it = Iterator('foo', {"apple":1, "pear":2, "orange":3}, context)
         >>> it.length()
         3
 
         But you can't get the length if an iterable without a length
         was provided:
-        
+
         >>> it = Iterator('foo', iter({"apple":1, "pear":2}), context)
         >>> it.length()
         Traceback (most recent call last):
@@ -427,17 +427,13 @@ class Iterator(object):
         TypeError: len() of unsized object
 
         """
-        
         return len(self._seq)
-
 
 
 class ErrorInfo:
     """Information about an exception passed to an on-error handler."""
-
-
     if tal:
-        __implements__ = ITALExpressionErrorInfo
+        implements(ITALExpressionErrorInfo)
 
     def __init__(self, err, position=(None, None)):
         if isinstance(err, Exception):
@@ -450,7 +446,6 @@ class ErrorInfo:
         self.offset = position[1]
 
 
-
 class ExpressionEngine:
     '''Expression Engine
 
@@ -459,9 +454,8 @@ class ExpressionEngine:
     these handlers.  It can provide an expression Context, which is
     capable of holding state and evaluating compiled expressions.
     '''
-
     if tal:
-        __implements__ = ITALExpressionCompiler
+        implements(ITALExpressionCompiler)
 
     def __init__(self):
         self.types = {}
@@ -498,11 +492,10 @@ class ExpressionEngine:
 
               def lower(self):
                  return self.context.lower()
-            
+
             engine.registerFunctionNamespace('string',stringFuncs)
-	"""
-	
-	self.namespaces[namespacename] = namespacecallable
+        """
+        self.namespaces[namespacename] = namespacecallable
 
 
     def getFunctionNamespace(self, namespacename):
@@ -570,7 +563,7 @@ class Context:
     '''
 
     if tal:
-        __implements__ = ITALExpressionEngine
+        implements(ITALExpressionEngine)
 
     position = (None, None)
     source_file = None
@@ -591,7 +584,7 @@ class Context:
 
         # Keep track of what needs to be popped as each scope ends.
         self._scope_stack = []
-        
+
     def setContext(self, name, value):
         # Hook to allow subclasses to do things like adding security proxies
         self.contexts[name] = value
@@ -605,7 +598,6 @@ class Context:
         self._vars_stack.pop()
         self.vars = self._vars_stack[-1]
 
-        
         scope = self._scope_stack.pop()
         # Pop repeat variables, if any
         i = len(scope) 
@@ -679,6 +671,7 @@ class Context:
 
 class TALESTracebackSupplement:
     """Implementation of zope.exceptions.ITracebackSupplement"""
+
     def __init__(self, context, expression):
         self.context = context
         self.source_url = context.source_file
