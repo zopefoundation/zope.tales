@@ -135,6 +135,36 @@ class ExpressionTests(ExpressionTestBase):
         self.assertRaises(self.engine.getCompilerError(),
                           self.engine.compile, 'python: splat.0')
 
+    def testEmptyPathSegmentRaisesCompilerError(self):
+        CompilerError = self.engine.getCompilerError()
+        def check(expr):
+            self.assertRaises(CompilerError, self.engine.compile, expr)
+
+        # path expressions on their own:
+        check('/ab/cd | c/d | e/f')
+        check('ab//cd | c/d | e/f')
+        check('ab/cd/ | c/d | e/f')
+        check('ab/cd | /c/d | e/f')
+        check('ab/cd | c//d | e/f')
+        check('ab/cd | c/d/ | e/f')
+        check('ab/cd | c/d | /e/f')
+        check('ab/cd | c/d | e//f')
+        check('ab/cd | c/d | e/f/')
+
+        # path expressions embedded in string: expressions:
+        check('string:${/ab/cd}')
+        check('string:${ab//cd}')
+        check('string:${ab/cd/}')
+        check('string:foo${/ab/cd | c/d | e/f}bar')
+        check('string:foo${ab//cd | c/d | e/f}bar')
+        check('string:foo${ab/cd/ | c/d | e/f}bar')
+        check('string:foo${ab/cd | /c/d | e/f}bar')
+        check('string:foo${ab/cd | c//d | e/f}bar')
+        check('string:foo${ab/cd | c/d/ | e/f}bar')
+        check('string:foo${ab/cd | c/d | /e/f}bar')
+        check('string:foo${ab/cd | c/d | e//f}bar')
+        check('string:foo${ab/cd | c/d | e/f/}bar')
+
 
 class FunctionTests(ExpressionTestBase):
 
