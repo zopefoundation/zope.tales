@@ -15,7 +15,7 @@
 
 An implementation of a TAL expression engine
 
-$Id: tales.py,v 1.16 2004/03/18 14:57:58 srichter Exp $
+$Id: tales.py,v 1.17 2004/03/23 19:18:17 srichter Exp $
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
@@ -666,6 +666,14 @@ class Context:
     def setGlobal(self, name, value):
         for vars in self._vars_stack:
             vars[name] = value
+
+    def getValue(self, name, default=None):
+        value = default
+        for vars in self._vars_stack:
+            value = vars.get(name, default)
+            if value is not default:
+                break
+        return value
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
