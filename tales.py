@@ -17,7 +17,7 @@ An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.6 $'[11:-2]
+__version__ = '$Revision: 1.7 $'[11:-2]
 
 import re
 from types import StringTypes
@@ -33,7 +33,8 @@ except ImportError:
     tal = None
 
 if tal:
-    from zope.tal.interfaces import ITALExpressionCompiler, ITALExpressionEngine
+    from zope.tal.interfaces import ITALExpressionEngine
+    from zope.tal.interfaces import ITALExpressionCompiler
     from zope.tal.interfaces import ITALExpressionErrorInfo
     from zope.tales.interfaces import ITALESIterator
 
