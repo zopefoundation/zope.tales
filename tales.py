@@ -468,10 +468,17 @@ class Iterator(object):
         >>> it.length()
         3
 
-        But you can't get the length if an iterable without a length
-        was provided:
+        But you can't get the length of an iterable which doesn't
+        support len():
 
-        >>> it = Iterator('foo', iter({"apple":1, "pear":2}), context)
+        >>> class MyIter(object):
+        ...     def __init__(self, seq):
+        ...         self._next = iter(seq).next
+        ...     def __iter__(self):
+        ...         return self
+        ...     def next(self):
+        ...         return self._next()
+        >>> it = Iterator('foo', MyIter({"apple":1, "pear":2}), context)
         >>> it.length()
         Traceback (most recent call last):
         ...
