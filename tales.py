@@ -17,13 +17,11 @@ An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.10 $'[11:-2]
+__version__ = '$Revision: 1.11 $'[11:-2]
 
 import re
 from types import StringTypes
 
-from zope.proxy import proxy_compatible_isinstance as isinstance_ex
-from zope.context.wrapper import getbaseobject
 from zope.tales.interfaces import ITALESIterator
 from zope.interface import implements
 
@@ -667,9 +665,6 @@ class Context:
         text = self.evaluate(expr)
         if text is _default or text is None:
             return text
-        if isinstance_ex(text, StringTypes):
-            # text could be a proxied/wrapped object
-            return getbaseobject(text)
         return unicode(text)
 
     def evaluateStructure(self, expr):
