@@ -135,7 +135,7 @@ class SubPathExpr:
                 ob = self._traverser(ob, val, econtext)
             elif callable(element):
                 ob = element(ob)
-                # XXX: Once we have n-ary adapters, use them.
+                # TODO: Once we have n-ary adapters, use them.
                 if ITALESFunctionNamespace.providedBy(ob):
                     ob.setEngine(econtext)
             else:
