@@ -13,7 +13,7 @@
 ##############################################################################
 """Interface that describes the 'macros' attribute of a PageTemplate.
 
-$Id: interfaces.py,v 1.1 2003/05/20 20:29:38 jim Exp $
+$Id: interfaces.py,v 1.2 2003/06/11 09:12:39 stevea Exp $
 """
 
 try:
@@ -32,7 +32,14 @@ if tal is not None:
         For example, with a TAL statement like: tal:repeat="item items",
         an iterator will be assigned to "repeat/item".  The iterator
         provides a number of handy methods useful in writing TAL loops.
+
+        The results are undefined of calling any of the methods except
+        'length' before the first iteration.
         """
+
+        def index():
+            """Return the position (starting with "0") within the iteration
+            """
 
         def number():
             """Return the position (starting with "1") within the iteration
@@ -44,6 +51,14 @@ if tal is not None:
 
         def odd():
             """Return whether the current position is odd
+            """
+
+        def start():
+            """Return whether the current position is the first position
+            """
+
+        def end():
+            """Return whether the current position is the last position
             """
 
         def letter():
@@ -62,16 +77,8 @@ if tal is not None:
             """Return the position (starting with "I") within the iteration
             """
 
-        def start():
-            """Return whether the current position is the first position
-            """
-
-        def end():
-            """Return whether the current position is the last position
-            """
-
         def item():
-            """Return whether the item at the current position
+            """Return the item at the current position
             """
 
         def length():
@@ -80,4 +87,3 @@ if tal is not None:
             Note that this may fail if the TAL iterator was created on a Python
             iterator.
             """
-    

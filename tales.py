@@ -17,7 +17,7 @@ An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.9 $'[11:-2]
+__version__ = '$Revision: 1.10 $'[11:-2]
 
 import re
 from types import StringTypes
@@ -163,6 +163,29 @@ class Iterator(object):
         self._nextIndex += 1
         self._setLocal(self._name, v)
         return 1
+
+    def index(self):
+        """Get the iterator index
+
+        >>> context = Context(ExpressionEngine(), {})
+        >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> int(bool(it.next()))
+        1
+        >>> it.index()
+        0
+        >>> int(bool(it.next()))
+        1
+        >>> it.index()
+        1
+        >>> int(bool(it.next()))
+        1
+        >>> it.index()
+        2
+        """
+        index = self._nextIndex - 1
+        if index < 0:
+            raise TypeError("No iteration position") 
+        return index
 
     def number(self):
         """Get the iterator position
@@ -401,6 +424,8 @@ class Iterator(object):
         1
 
         """
+        if self._nextIndex == 0:
+            raise TypeError("No iteration position") 
         return self._item
 
     def length(self):
