@@ -109,7 +109,7 @@ if tal is not None:
             """
 
         def length():
-            """Return whether the length of the sequence
+            """Return the length of the sequence
 
             Note that this may fail if the TAL iterator was created on a Python
             iterator.
