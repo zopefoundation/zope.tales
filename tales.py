@@ -17,7 +17,7 @@ An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.11 $'[11:-2]
+__version__ = '$Revision: 1.12 $'[11:-2]
 
 import re
 from types import StringTypes
@@ -56,8 +56,6 @@ class RegistrationError(Exception):
 
 
 _default = object()
-
-_marker = object()
 
 class Iterator(object):
     """TALES Iterator
@@ -663,7 +661,7 @@ class Context:
 
     def evaluateText(self, expr):
         text = self.evaluate(expr)
-        if text is _default or text is None:
+        if text is self.getDefault() or text is None:
             return text
         return unicode(text)
 
