@@ -11,6 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""TALES Tests
+
+$Id$
+"""
 import unittest
 
 from zope.tales import tales
