@@ -74,6 +74,12 @@ if tal is not None:
             """Return whether the current position is odd
             """
 
+        def parity():
+            """Return 'odd' or 'even' depending on the position's parity
+
+            Useful for assigning CSS class names to table rows.
+            """
+
         def start():
             """Return whether the current position is the first position
             """
