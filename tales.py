@@ -17,7 +17,7 @@ An implementation of a generic TALES engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.2 $'[11:-2]
+__version__ = '$Revision: 1.3 $'[11:-2]
 
 import re
 import sys
@@ -262,8 +262,7 @@ class Context:
         self.repeat_vars[name] = it
         return it
 
-    def evaluate(self, expression,
-                 isinstance=isinstance):
+    def evaluate(self, expression):
         if isinstance(expression, str):
             expression = self._engine.compile(expression)
         __traceback_supplement__ = (
@@ -279,9 +278,9 @@ class Context:
         text = self.evaluate(expr)
         if text is _default or text is None:
             return text
-        if not isinstance(text, StringTypes):
-            text = unicode(text)
-        return text
+        if isinstance(text, StringTypes):
+            return text
+        return unicode(text)
 
     def evaluateStructure(self, expr):
         return self.evaluate(expr)
