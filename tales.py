@@ -17,12 +17,10 @@ An implementation of a TAL expression engine
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
-__version__ = '$Revision: 1.12 $'[11:-2]
+__version__ = '$Revision: 1.13 $'[11:-2]
 
 import re
-from types import StringTypes
 
-from zope.tales.interfaces import ITALESIterator
 from zope.interface import implements
 
 try:
