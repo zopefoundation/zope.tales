@@ -13,7 +13,7 @@
 ##############################################################################
 """Basic Page Template expression types.
 
-$Id: expressions.py,v 1.9 2004/03/05 22:09:42 jim Exp $
+$Id$
 """
 import re
 from types import StringTypes, TupleType

@@ -13,7 +13,7 @@
 ##############################################################################
 """Generic Python Expression Handler
 
-$Id: pythonexpr.py,v 1.2 2004/03/21 16:55:50 philikon Exp $
+$Id$
 """
 
 class PythonExpr:

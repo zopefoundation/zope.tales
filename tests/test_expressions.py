@@ -13,7 +13,7 @@
 ##############################################################################
 """Default TALES expression implementations tests.
 
-$Id: test_expressions.py,v 1.5 2003/09/19 10:27:11 srichter Exp $
+$Id$
 """
 import unittest
 

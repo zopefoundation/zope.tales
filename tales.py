@@ -15,7 +15,7 @@
 
 An implementation of a TAL expression engine
 
-$Id: tales.py,v 1.17 2004/03/23 19:18:17 srichter Exp $
+$Id$
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
