@@ -16,7 +16,7 @@
 $Id$
 """
 
-class PythonExpr:
+class PythonExpr(object):
     def __init__(self, name, expr, engine):
         text = '\n'.join(expr.splitlines()) # normalize line endings
         text = '(' + text + ')' # Put text in parens so newlines don't matter
@@ -64,7 +64,7 @@ class PythonExpr:
         return '<PythonExpr %s>' % self.text
 
 
-class ExprTypeProxy:
+class ExprTypeProxy(object):
     '''Class that proxies access to an expression type handler'''
     def __init__(self, name, handler, econtext):
         self._name = name

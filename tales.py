@@ -538,7 +538,7 @@ class ExpressionEngine(object):
 
         example:
 
-           class stringFuncs:
+           class stringFuncs(object):
 
               def __init__(self,context):
                  self.context = str(context)

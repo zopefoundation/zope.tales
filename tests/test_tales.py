@@ -11,6 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""TALES Tests
+
+$Id$
+"""
 import unittest
 
 from zope.tales import tales
@@ -127,7 +131,7 @@ class TALESTests(unittest.TestCase):
         ctxt.endScope()
 
 
-class Harness:
+class Harness(object):
     def __init__(self, testcase):
         self._callstack = []
         self._testcase = testcase
@@ -142,7 +146,7 @@ class Harness:
     def __getattr__(self, name):
         return HarnessMethod(self, name)
 
-class HarnessMethod:
+class HarnessMethod(object):
 
     def __init__(self, harness, name):
         self._harness = harness
