@@ -18,7 +18,7 @@ $Id$
 
 class PythonExpr:
     def __init__(self, name, expr, engine):
-        text = expr.replace('\n', ' ').strip()
+        text = ' '.join(expr.splitlines()).strip()
         self.text = text
         # The next line can legally raise SyntaxError.
         self._code = code = compile(text, '<string>', 'eval')

@@ -126,6 +126,12 @@ class ExpressionTests(ExpressionTestBase):
         context=self.context
         self.assertEqual(expr(context), 4)
 
+    def testPythonDosNewline(self):
+        expr = self.engine.compile('python: 2 \r\n+\r\n 2\r\n')
+        context=self.context
+        self.assertEqual(expr(context), 4)
+
+
 class FunctionTests(ExpressionTestBase):
 
     def setUp(self):
