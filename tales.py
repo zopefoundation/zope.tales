@@ -14,10 +14,10 @@
 """TALES
 
 An implementation of a TAL expression engine
+
+$Id: tales.py,v 1.15 2004/02/13 22:31:39 srichter Exp $
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
-
-__version__ = '$Revision: 1.14 $'[11:-2]
 
 import re
 
