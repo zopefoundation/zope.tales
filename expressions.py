@@ -13,7 +13,7 @@
 ##############################################################################
 """Basic Page Template expression types.
 
-$Id: expressions.py,v 1.5 2003/06/20 06:41:28 stevea Exp $
+$Id: expressions.py,v 1.6 2003/09/16 22:11:26 srichter Exp $
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
@@ -22,6 +22,7 @@ from types import StringTypes, TupleType
 
 from zope.tales.tales import CompilerError
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined 
+from zope.tales.interfaces import ITALESFunctionNamespace
 
 Undefs = (Undefined, AttributeError, KeyError, TypeError, IndexError)
 
@@ -130,6 +131,9 @@ class SubPathExpr:
                 ob = self._traverser(ob, val, econtext)
             elif callable(element):
                 ob = element(ob)
+                # XXX: Once we have n-ary adapters, use them.
+                if ITALESFunctionNamespace.isImplementedBy(ob):
+                    ob.setEngine(econtext)
             else:
                 raise "Waagh!"
         return ob

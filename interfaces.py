@@ -13,13 +13,23 @@
 ##############################################################################
 """Interface that describes the 'macros' attribute of a PageTemplate.
 
-$Id: interfaces.py,v 1.2 2003/06/11 09:12:39 stevea Exp $
+$Id: interfaces.py,v 1.3 2003/09/16 22:11:26 srichter Exp $
 """
+from zope.interface import Interface
 
 try:
     from zope import tal
 except ImportError:
     tal = None
+
+
+class ITALESFunctionNamespace(Interface):
+    """Function namespaces can be used in TALES path expressions to extract
+    information in non-default ways."""
+
+    def setEngine(engine):
+        """Sets the engine that is used to evaluate TALES expressions.""" 
+
 
 if tal is not None:
     from zope.tal.interfaces import ITALIterator
