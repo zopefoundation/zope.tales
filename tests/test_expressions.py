@@ -131,6 +131,10 @@ class ExpressionTests(ExpressionTestBase):
         context=self.context
         self.assertEqual(expr(context), 4)
 
+    def testPythonErrorRaisesCompilerError(self):
+        self.assertRaises(self.engine.getCompilerError(),
+                          self.engine.compile, 'python: splat.0')
+
 
 class FunctionTests(ExpressionTestBase):
 

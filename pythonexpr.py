@@ -21,7 +21,10 @@ class PythonExpr:
         text = ' '.join(expr.splitlines()).strip()
         self.text = text
         # The next line can legally raise SyntaxError.
-        self._code = code = compile(text, '<string>', 'eval')
+        try:
+            self._code = code = compile(text, '<string>', 'eval')
+        except SyntaxError, e:
+            raise engine.getCompilerError()(str(e))
         self._varnames = code.co_names
 
     def _bind_used_names(self, econtext, builtins):
