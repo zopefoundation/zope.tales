@@ -17,8 +17,6 @@ An implementation of a TAL expression engine
 
 $Id$
 """
-__metaclass__ = type # All classes are new style when run with Python 2.2+
-
 import re
 
 from zope.interface import implements
@@ -488,7 +486,7 @@ class Iterator(object):
         return len(self._seq)
 
 
-class ErrorInfo:
+class ErrorInfo(object):
     """Information about an exception passed to an on-error handler."""
     if tal:
         implements(ITALExpressionErrorInfo)
@@ -504,7 +502,7 @@ class ErrorInfo:
         self.offset = position[1]
 
 
-class ExpressionEngine:
+class ExpressionEngine(object):
     '''Expression Engine
 
     An instance of this class keeps a mutable collection of expression
@@ -613,7 +611,7 @@ class ExpressionEngine:
         return CompilerError
 
 
-class Context:
+class Context(object):
     '''Expression Context
 
     An instance of this class holds context information that it can
@@ -732,7 +730,7 @@ class Context:
         self.position = position
 
 
-class TALESTracebackSupplement:
+class TALESTracebackSupplement(object):
     """Implementation of zope.exceptions.ITracebackSupplement"""
 
     def __init__(self, context, expression):

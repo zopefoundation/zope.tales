@@ -21,8 +21,6 @@ from zope.interface import implements
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
 from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
 
-__metaclass__ = type
-
 Undefs = (Undefined, AttributeError, KeyError, TypeError, IndexError)
 
 _marker = object()
@@ -43,7 +41,7 @@ def simpleTraverse(object, path_items, econtext):
     return object
 
 
-class SubPathExpr:
+class SubPathExpr(object):
 
     def __init__(self, path, traverser, engine):
         self._traverser = traverser
@@ -144,7 +142,7 @@ class SubPathExpr:
 
 
 
-class PathExpr:
+class PathExpr(object):
     """One or more subpath expressions, separated by '|'."""
     implements(ITALESExpression)
 
@@ -218,7 +216,7 @@ class PathExpr:
 
 _interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/[^}]*)*)}' % {'n': NAME_RE})
 
-class StringExpr:
+class StringExpr(object):
     implements(ITALESExpression)
 
     def __init__(self, name, expr, engine):
@@ -261,7 +259,7 @@ class StringExpr:
         return '<StringExpr %s>' % `self._s`
 
 
-class NotExpr:
+class NotExpr(object):
     implements(ITALESExpression)
 
     def __init__(self, name, expr, engine):
@@ -275,7 +273,7 @@ class NotExpr:
         return '<NotExpr %s>' % `self._s`
 
 
-class DeferWrapper:
+class DeferWrapper(object):
     def __init__(self, expr, econtext):
         self._expr = expr
         self._econtext = econtext
@@ -287,7 +285,7 @@ class DeferWrapper:
         return self._expr(self._econtext)
 
 
-class DeferExpr:
+class DeferExpr(object):
     implements(ITALESExpression)
 
     def __init__(self, name, expr, compiler):
@@ -301,7 +299,7 @@ class DeferExpr:
         return '<DeferExpr %s>' % `self._s`
 
 
-class SimpleModuleImporter:
+class SimpleModuleImporter(object):
     """Minimal module importer with no security."""
 
     def __getitem__(self, module):
