@@ -18,8 +18,7 @@ $Id$
 import re
 
 from zope.interface import implements
-from zope.tales.tales import CompilerError
-from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined 
+from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
 from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
 
 __metaclass__ = type
@@ -54,33 +53,36 @@ class SubPathExpr:
         compiledpath = []
         currentpath = []
         for element in str(path).strip().split('/'):
+            if not element:
+                raise engine.getCompilerError()(
+                    'Path element may not be empty in %r' % path)
             if element.startswith('?'):
                 if currentpath:
                     compiledpath.append(tuple(currentpath))
-                    currentpath=[]
+                    currentpath = []
                 if not _valid_name(element[1:]):
-                    raise CompilerError('Invalid variable name "%s"'
-                                        % element[1:])
+                    raise engine.getCompilerError()(
+                        'Invalid variable name "%s"' % element[1:])
                 compiledpath.append(element[1:])
             else:
                 match = namespace_re.match(element)
                 if match:
                     if currentpath:
                         compiledpath.append(tuple(currentpath))
-                        currentpath=[]
+                        currentpath = []
                     namespace, functionname = match.groups()
                     if not _valid_name(namespace):
-                        raise CompilerError('Invalid namespace name "%s"'
-                                            % namespace)
+                        raise engine.getCompilerError()(
+                            'Invalid namespace name "%s"' % namespace)
                     if not _valid_name(functionname):
-                        raise CompilerError('Invalid function name "%s"'
-                                            % functionname)
+                        raise engine.getCompilerError()(
+                            'Invalid function name "%s"' % functionname)
                     try:
                         compiledpath.append(
                             self._engine.getFunctionNamespace(namespace))
                     except KeyError:
-                        raise CompilerError('Unknown namespace "%s"'
-                                            % namespace)
+                        raise engine.getCompilerError()(
+                            'Unknown namespace "%s"' % namespace)
                     currentpath.append(functionname)
                 else:
                     currentpath.append(element)
@@ -93,21 +95,22 @@ class SubPathExpr:
 
         if callable(first):
             # check for initial function
-            raise CompilerError(
+            raise engine.getCompilerError()(
                 'Namespace function specified in first subpath element')
         elif isinstance(first, basestring):
             # check for initial ?
-            raise CompilerError(
+            raise engine.getCompilerError()(
                 'Dynamic name specified in first subpath element')
 
         if base and not _valid_name(base):
-            raise CompilerError, 'Invalid variable name "%s"' % element
+            raise engine.getCompilerError()(
+                'Invalid variable name "%s"' % element)
         self._base = base
-        compiledpath[0]=first[1:]
+        compiledpath[0] = first[1:]
         self._compiled_path = tuple(compiledpath)
 
     def _eval(self, econtext,
-              list=list, isinstance=isinstance):
+              isinstance=isinstance):
         vars = econtext.vars
 
         compiled_path = self._compiled_path
@@ -238,7 +241,7 @@ class StringExpr:
                     exp = exp[m.end():]
                     m = _interp.search(exp)
                 if '$' in exp:
-                    raise CompilerError, (
+                    raise engine.getCompilerError()(
                         '$ must be doubled or followed by a simple path')
                 parts.append(exp)
             expr = ''.join(parts)
