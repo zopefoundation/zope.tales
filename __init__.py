@@ -11,5 +11,8 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Template Attribute Language - Expression Syntax"""
+"""Template Attribute Language - Expression Syntax
+
+$Id$
+"""
 
