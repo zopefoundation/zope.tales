@@ -16,7 +16,7 @@
 $Id$
 """
 
-class PythonExpr:
+class PythonExpr(object):
     def __init__(self, name, expr, engine):
         text = ' '.join(expr.splitlines()).strip()
         self.text = text
@@ -58,7 +58,7 @@ class PythonExpr:
         return '<PythonExpr %s>' % self.text
 
 
-class ExprTypeProxy:
+class ExprTypeProxy(object):
     '''Class that proxies access to an expression type handler'''
     def __init__(self, name, handler, econtext):
         self._name = name

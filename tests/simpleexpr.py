@@ -11,8 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Simple TALES Expression
 
-class SimpleExpr:
+$Id$
+"""
+
+class SimpleExpr(object):
     '''Simple example of an expression type handler
 
     for testing

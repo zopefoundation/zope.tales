@@ -21,7 +21,7 @@ from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.interface import implements
 
-class Data:
+class Data(object):
 
     def __init__(self, **kw):
         self.__dict__.update(kw)
@@ -142,7 +142,7 @@ class FunctionTests(ExpressionTestBase):
         ExpressionTestBase.setUp(self)
 
         # a test namespace
-        class TestNameSpace:
+        class TestNameSpace(object):
             implements(ITALESFunctionNamespace)
 
             def __init__(self, context):
