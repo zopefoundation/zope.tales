@@ -18,7 +18,8 @@ $Id$
 
 class PythonExpr(object):
     def __init__(self, name, expr, engine):
-        text = ' '.join(expr.splitlines()).strip()
+        text = '\n'.join(expr.splitlines()) # normalize line endings
+        text = '(' + text + ')' # Put text in parens so newlines don't matter
         self.text = text
         try:
             code = self._compile(text, '<string>')
@@ -36,6 +37,8 @@ class PythonExpr(object):
         names = {}
         vars = econtext.vars
         marker = self
+        if not isinstance(builtins, dict):
+            builtins = builtins.__dict__
         for vname in self._varnames:
             val = vars.get(vname, marker)
             if val is not marker:
