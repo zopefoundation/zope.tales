@@ -13,7 +13,7 @@
 ##############################################################################
 """Interface that describes the 'macros' attribute of a PageTemplate.
 
-$Id: interfaces.py,v 1.3 2003/09/16 22:11:26 srichter Exp $
+$Id: interfaces.py,v 1.4 2004/03/04 02:04:13 philikon Exp $
 """
 from zope.interface import Interface
 
@@ -30,6 +30,17 @@ class ITALESFunctionNamespace(Interface):
     def setEngine(engine):
         """Sets the engine that is used to evaluate TALES expressions.""" 
 
+class ITALESExpression(Interface):
+    """TALES expression
+
+    These are expression handlers that handle a specific type of
+    expression in TALES, e.g. path or string expression.
+    """
+
+    def __call__(econtext):
+        """Evaluate expression according to the given execution
+        context 'econtext' and return computed value.
+        """
 
 if tal is not None:
     from zope.tal.interfaces import ITALIterator

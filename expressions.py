@@ -13,16 +13,17 @@
 ##############################################################################
 """Basic Page Template expression types.
 
-$Id: expressions.py,v 1.7 2003/11/05 19:38:13 evan Exp $
+$Id: expressions.py,v 1.8 2004/03/04 02:04:13 philikon Exp $
 """
-__metaclass__ = type # All classes are new style when run with Python 2.2+
-
 import re
 from types import StringTypes, TupleType
 
+from zope.interface import implements
 from zope.tales.tales import CompilerError
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined 
-from zope.tales.interfaces import ITALESFunctionNamespace
+from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
+
+__metaclass__ = type
 
 Undefs = (Undefined, AttributeError, KeyError, TypeError, IndexError)
 
@@ -45,6 +46,7 @@ def simpleTraverse(object, path_items, econtext):
 
 
 class SubPathExpr:
+
     def __init__(self, path, traverser, engine):
         self._traverser = traverser
         self._engine = engine
@@ -141,8 +143,8 @@ class SubPathExpr:
 
 
 class PathExpr:
-    """One or more subpath expressions, separated by '|'.
-    """
+    """One or more subpath expressions, separated by '|'."""
+    implements(ITALESExpression)
 
     # _default_type_names contains the expression type names this
     # class is usually registered for.
@@ -215,6 +217,8 @@ class PathExpr:
 _interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/[^}]*)*)}' % {'n': NAME_RE})
 
 class StringExpr:
+    implements(ITALESExpression)
+
     def __init__(self, name, expr, engine):
         self._s = expr
         if '%' in expr:
@@ -256,6 +260,8 @@ class StringExpr:
 
 
 class NotExpr:
+    implements(ITALESExpression)
+
     def __init__(self, name, expr, engine):
         self._s = expr = expr.lstrip()
         self._c = engine.compile(expr)
@@ -280,6 +286,8 @@ class DeferWrapper:
 
 
 class DeferExpr:
+    implements(ITALESExpression)
+
     def __init__(self, name, expr, compiler):
         self._s = expr = expr.lstrip()
         self._c = compiler.compile(expr)
@@ -293,6 +301,7 @@ class DeferExpr:
 
 class SimpleModuleImporter:
     """Minimal module importer with no security."""
+
     def __getitem__(self, module):
         mod = __import__(module)
         path = module.split('.')
