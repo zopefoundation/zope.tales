@@ -13,7 +13,7 @@
 ##############################################################################
 """Basic Page Template expression types.
 
-$Id: expressions.py,v 1.4 2003/05/20 20:29:21 jim Exp $
+$Id: expressions.py,v 1.5 2003/06/20 06:41:28 stevea Exp $
 """
 __metaclass__ = type # All classes are new style when run with Python 2.2+
 
@@ -47,7 +47,7 @@ class SubPathExpr:
     def __init__(self, path, traverser, engine):
         self._traverser = traverser
         self._engine = engine
-        
+
         # Parse path
         compiledpath = []
         currentpath = []
@@ -85,10 +85,10 @@ class SubPathExpr:
 
         if currentpath:
             compiledpath.append(tuple(currentpath))
-            
+
         first = compiledpath[0]
         base = first[0]
-        
+
         if callable(first):
             # check for initial function
             raise CompilerError(
@@ -97,14 +97,13 @@ class SubPathExpr:
             # check for initial ?
             raise CompilerError(
                 'Dynamic name specified in first subpath element')
-        
+
         if not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % element
         self._base = base
         compiledpath[0]=first[1:]
         self._compiled_path = tuple(compiledpath)
 
-        
     def _eval(self, econtext,
               list=list, isinstance=isinstance):
         vars = econtext.vars
