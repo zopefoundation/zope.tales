@@ -715,7 +715,7 @@ class Context:
     evaluateStructure = evaluate
 
     def evaluateMacro(self, expr):
-        # XXX Should return None or a macro definition
+        # TODO: Should return None or a macro definition
         return self.evaluate(expr)
     evaluateMacro = evaluate
 
