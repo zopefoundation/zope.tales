@@ -13,7 +13,7 @@
 ##############################################################################
 """Basic Page Template expression types.
 
-$Id: expressions.py,v 1.8 2004/03/04 02:04:13 philikon Exp $
+$Id: expressions.py,v 1.9 2004/03/05 22:09:42 jim Exp $
 """
 import re
 from types import StringTypes, TupleType
@@ -134,7 +134,7 @@ class SubPathExpr:
             elif callable(element):
                 ob = element(ob)
                 # XXX: Once we have n-ary adapters, use them.
-                if ITALESFunctionNamespace.isImplementedBy(ob):
+                if ITALESFunctionNamespace.providedBy(ob):
                     ob.setEngine(econtext)
             else:
                 raise "Waagh!"
