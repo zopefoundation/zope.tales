@@ -37,7 +37,7 @@ def simpleTraverse(object, path_items, econtext):
         elif hasattr(object, '__getitem__'):
             object = object[name]
         else:
-            raise NameError, name
+            raise NameError(name)
     return object
 
 

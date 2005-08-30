@@ -560,13 +560,11 @@ class ExpressionEngine(object):
 
     def registerType(self, name, handler):
         if not _valid_name(name):
-            raise RegistrationError, (
-                'Invalid expression type name "%s".' % name)
+            raise RegistrationError('Invalid expression type name "%s".' % name)
         types = self.types
         if name in types:
-            raise RegistrationError, (
-                'Multiple registrations for Expression type "%s".' %
-                name)
+            raise RegistrationError(
+                'Multiple registrations for Expression type "%s".' % name)
         types[name] = handler
 
     def getTypes(self):
@@ -574,10 +572,10 @@ class ExpressionEngine(object):
 
     def registerBaseName(self, name, object):
         if not _valid_name(name):
-            raise RegistrationError, 'Invalid base name "%s".' % name
+            raise RegistrationError('Invalid base name "%s".' % name)
         base_names = self.base_names
         if name in base_names:
-            raise RegistrationError, (
+            raise RegistrationError(
                 'Multiple registrations for base name "%s".' % name)
         base_names[name] = object
 
@@ -595,8 +593,7 @@ class ExpressionEngine(object):
         try:
             handler = self.types[type]
         except KeyError:
-            raise CompilerError, (
-                'Unrecognized expression type "%s".' % type)
+            raise CompilerError('Unrecognized expression type "%s".' % type)
         return handler(type, expr, self)
 
     def getContext(self, contexts=None, **kwcontexts):
