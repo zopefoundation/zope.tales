@@ -24,7 +24,7 @@ from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
 Undefs = (Undefined, AttributeError, KeyError, TypeError, IndexError)
 
 _marker = object()
-namespace_re = re.compile('(\w+):(.+)')
+namespace_re = re.compile(r'(\w+):(.+)')
 
 def simpleTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
