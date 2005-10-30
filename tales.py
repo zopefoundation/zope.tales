@@ -17,6 +17,7 @@ An implementation of a TAL expression engine
 
 $Id$
 """
+__docformat__ = "reStructuredText"
 import re
 
 from zope.interface import implements
@@ -83,7 +84,7 @@ class Iterator(object):
         >>> it = Iterator('foo', {"apple":1, "pear":1, "orange":1}, context)
         >>> it.next()
         True
-        
+
         >>> it = Iterator('foo', {}, context)
         >>> it.next()
         False
@@ -187,7 +188,7 @@ class Iterator(object):
         """
         index = self._nextIndex - 1
         if index < 0:
-            raise TypeError("No iteration position") 
+            raise TypeError("No iteration position")
         return index
 
     def number(self):
