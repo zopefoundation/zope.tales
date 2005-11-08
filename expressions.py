@@ -134,7 +134,7 @@ class SubPathExpr(object):
                 if ITALESFunctionNamespace.providedBy(ob):
                     ob.setEngine(econtext)
             else:
-                raise "Waagh!"
+                raise ValueError(repr(element))
         return ob
 
 
