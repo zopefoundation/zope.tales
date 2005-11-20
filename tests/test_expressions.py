@@ -260,7 +260,7 @@ class FunctionTests(ExpressionTestBase):
         try:
             expr = self.engine.compile('adapterTest/namespace:title')
             expr(self.context)
-        except (NameError,KeyError),e: 
+        except KeyError,e: 
             self.assertEquals(e.args[0],'title')
         else:
             self.fail('Engine accepted unknown function')
