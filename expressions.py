@@ -37,7 +37,7 @@ def simpleTraverse(object, path_items, econtext):
         elif hasattr(object, '__getitem__'):
             object = object[name]
         else:
-            # Allow AttributError to propagate
+            # Allow AttributeError to propagate
             object = getattr(object, name)
     return object
 
