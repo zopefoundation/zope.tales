@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Setup for zope.deprecation package
+"""Setup for zope.tales package
 
 $Id$
 """
@@ -25,21 +25,23 @@ try:
 except ImportError, e:
     from distutils.core import setup, Extension
 
-setup(name='zope.deprecation',
+setup(name='zope.tales',
       version='3.0',
 
-      url='http://svn.zope.org/zope.deprecation',
+      url='http://svn.zope.org/zope.tales',
       license='ZPL 2.1',
-      description='Zope 3 Deprection Framework',
+      description='Zope 3 Template Application Language Expression Syntax '
+                  '(TALES)',
       author='Zope Corporation and Contributors',
       author_email='zope3-dev@zope.org',
       long_description='',
 
-      packages=['zope', 'zope.deprecation'],
+      packages=['zope', 'zope.tales'],
       package_dir = {'': os.path.join(os.path.dirname(__file__), 'src')},
 
       namespace_packages=['zope',],
       tests_require = ['zope.testing'],
+      install_requires=['zope.interface', 'zope.tal'],
       include_package_data = True,
 
       zip_safe = False,
