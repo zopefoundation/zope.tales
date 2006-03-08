@@ -26,9 +26,9 @@ Installing a Development Checkout
 
 Check out the package from subversion:
 
-  $ svn co svn+ssh://svn.zope.org/repos/main/zope.deprecation/trunk \
-    src/zope.deprecation
-  $ cd src/zope.deprecation
+  $ svn co svn+ssh://svn.zope.org/repos/main/zope.tales/trunk \
+    src/zope.tales
+  $ cd src/zope.tales
 
 Install it as a "devlopment egg" (which also installs its "hard"
 dependencies):
@@ -67,8 +67,8 @@ Installing a Source Distribution
 
 You can also install it from a source distribution:
 
-  $ /path/to/easy_install --find-links="...." -eb src zope-deprecation
-  $ cd src/zope.deprecation
+  $ /path/to/easy_install --find-links="...." -eb src zope-tales
+  $ cd src/zope.tales
   $ /path/to/your/python setup.py devel
 
 
@@ -78,6 +78,6 @@ Installing a Binary Egg
 Install the package as a "binary egg" (which also installs its "hard"
 dependencies):
 
-  $ /path/to/easy_install --find-links="...." zope-deprecation
+  $ /path/to/easy_install --find-links="...." zope-tales
 
 
