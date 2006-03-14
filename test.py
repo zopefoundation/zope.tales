@@ -28,7 +28,7 @@ from zope.testing import testrunner
 
 defaults = [
     '--path', src,
-    '--package', 'zope.deprecation',
+    '--package', 'zope.tales',
     '--tests-pattern', '^tests$',
     ]
 
