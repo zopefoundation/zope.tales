@@ -26,7 +26,7 @@ except ImportError, e:
     from distutils.core import setup, Extension
 
 setup(name='zope.tales',
-      version='3.0',
+      version='1.0',
 
       url='http://svn.zope.org/zope.tales',
       license='ZPL 2.1',
@@ -34,7 +34,6 @@ setup(name='zope.tales',
                   '(TALES)',
       author='Zope Corporation and Contributors',
       author_email='zope3-dev@zope.org',
-      long_description='',
 
       packages=['zope', 'zope.tales'],
       package_dir = {'': os.path.join(os.path.dirname(__file__), 'src')},
