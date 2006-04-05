@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2004 Zope Corporation and Contributors.
+# Copyright (c) 2006 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -26,9 +26,9 @@ except ImportError, e:
     from distutils.core import setup, Extension
 
 setup(name='zope.tales',
-      version='1.0',
+      version='3.0.0',
 
-      url='http://svn.zope.org/zope.tales',
+      url='http://svn.zope.org/zope.tales/tags/3.0.0',
       license='ZPL 2.1',
       description='Zope 3 Template Application Language Expression Syntax '
                   '(TALES)',
@@ -40,7 +40,9 @@ setup(name='zope.tales',
 
       namespace_packages=['zope',],
       tests_require = ['zope.testing'],
-      install_requires=['zope.interface', 'zope.tal'],
+      install_requires=['zope.interface',
+                        'zope.tal',
+                       ],
       include_package_data = True,
 
       zip_safe = False,
