@@ -21,7 +21,7 @@ from zope.interface import implements
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
 from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
 
-Undefs = (Undefined, AttributeError, KeyError, TypeError, IndexError)
+Undefs = (Undefined, AttributeError, LookupError, TypeError)
 
 _marker = object()
 namespace_re = re.compile(r'(\w+):(.+)')

@@ -19,6 +19,7 @@ import unittest
 
 from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
+from zope.tales.tales import Undefined
 from zope.interface import implements
 
 class Data(object):
@@ -30,10 +31,17 @@ class Data(object):
 
     __str__ = __repr__
 
+class ErrorGenerator:
 
-def dict(**kw):
-    return kw
-
+    def __getitem__(self, name):
+        import __builtin__
+        if name == 'Undefined':
+            e = Undefined
+        else:
+            e = getattr(__builtin__, name, None)
+        if e is None:
+            e = SystemError
+        raise e('mess')
 
 class ExpressionTestBase(unittest.TestCase):
 
@@ -58,6 +66,7 @@ class ExpressionTestBase(unittest.TestCase):
               B = 2,
               adapterTest = at,
               dynamic = 'z',
+              ErrorGenerator = ErrorGenerator(),
               )
             )
 
@@ -85,6 +94,11 @@ class ExpressionTests(ExpressionTestBase):
         expr = self.engine.compile('path:a|b|c/d/e')
         context=self.context
         self.assertEqual(expr(context), 'boot')
+
+        for e in 'Undefined', 'AttributeError', 'LookupError', 'TypeError':
+            expr = self.engine.compile('path:ErrorGenerator/%s|b|c/d/e' % e)
+            context=self.context
+            self.assertEqual(expr(context), 'boot')
 
     def testDynamic(self):
         expr = self.engine.compile('x/y/?dynamic')
