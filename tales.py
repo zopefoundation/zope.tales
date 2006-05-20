@@ -704,6 +704,9 @@ class Context(object):
         text = self.evaluate(expr)
         if text is self.getDefault() or text is None:
             return text
+        if isinstance(text, basestring):
+            # text could already be something text-ish, e.g. a Message object
+            return text
         return unicode(text)
 
     def evaluateStructure(self, expr):
