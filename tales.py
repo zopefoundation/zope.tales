@@ -730,6 +730,11 @@ class Context(object):
     def setPosition(self, position):
         self.position = position
 
+    def translate(self, msgid, domain=None, mapping=None, default=None):
+        # custom Context implementations are supposed to customize
+        # this to call whichever translation routine they want to use
+        return unicode(msgid)
+
 
 class TALESTracebackSupplement(object):
     """Implementation of zope.exceptions.ITracebackSupplement"""
