@@ -15,7 +15,7 @@
 
 $Id$
 """
-import re
+import re, types
 
 from zope.interface import implements
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
@@ -139,7 +139,6 @@ class SubPathExpr(object):
         return ob
 
 
-
 class PathExpr(object):
     """One or more subpath expressions, separated by '|'."""
     implements(ITALESExpression)
@@ -156,6 +155,7 @@ class PathExpr(object):
     def __init__(self, name, expr, engine, traverser=simpleTraverse):
         self._s = expr
         self._name = name
+        self._hybrid = False
         paths = expr.split('|')
         self._subexprs = []
         add = self._subexprs.append
@@ -165,6 +165,7 @@ class PathExpr(object):
                 # This part is the start of another expression type,
                 # so glue it back together and compile it.
                 add(engine.compile('|'.join(paths[i:]).lstrip()))
+                self._hybrid = True
                 break
             add(SubPathExpr(path, traverser, engine)._eval)
 
@@ -188,14 +189,25 @@ class PathExpr(object):
             else:
                 break
         else:
-            # On the last subexpression allow exceptions through.
+            # On the last subexpression allow exceptions through, and
+            # don't autocall if the expression was not a subpath.
             ob = self._subexprs[-1](econtext)
+            if self._hybrid:
+                return ob
 
         if self._name == 'nocall':
             return ob
 
-        # Call the object if it is callable.
-        if hasattr(ob, '__call__'):
+        # Call the object if it is callable.  Note that checking for
+        # callable() isn't safe because the object might be security
+        # proxied (and security proxies report themselves callable, no
+        # matter what the underlying object is).  We therefore check
+        # for the __call__ attribute, but not with hasattr as that
+        # eats babies, err, exceptions.  In addition to that, we
+        # support calling old style classes which don't have a
+        # __call__.
+        if (getattr(ob, '__call__', _marker) is not _marker
+            or isinstance(ob, types.ClassType)):
             return ob()
         return ob
 
