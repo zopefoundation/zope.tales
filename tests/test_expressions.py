@@ -114,7 +114,7 @@ class ExpressionTests(ExpressionTestBase):
                              'Dynamic name specified in first subpath element')
         else:
             self.fail('Engine accepted first subpath element as dynamic')
-            
+
     def testOldStyleClassIsCalled(self):
         class AnOldStyleClass:
             pass
@@ -142,6 +142,11 @@ class ExpressionTests(ExpressionTestBase):
         context=self.context
         self.assertEqual(expr(context), 4)
 
+    def testPythonCallableIsntCalled(self):
+        self.context.vars['acallable'] = lambda: 23
+        expr = self.engine.compile('python: acallable')
+        self.assertEqual(expr(self.context), self.context.vars['acallable'])
+
     def testPythonNewline(self):
         expr = self.engine.compile('python: 2 \n+\n 2\n')
         context=self.context
@@ -155,6 +160,20 @@ class ExpressionTests(ExpressionTestBase):
     def testPythonErrorRaisesCompilerError(self):
         self.assertRaises(self.engine.getCompilerError(),
                           self.engine.compile, 'python: splat.0')
+
+    def testHybridPathExpressions(self):
+        def eval(expr):
+            e = self.engine.compile(expr)
+            return e(self.context)
+        self.context.vars['one'] = 1
+        self.context.vars['acallable'] = lambda: 23
+
+        self.assertEqual(eval('foo | python:1+1'), 2)
+        self.assertEqual(eval('foo | python:acallable'),
+                         self.context.vars['acallable'])
+        self.assertEqual(eval('foo | string:x'), 'x')
+        self.assertEqual(eval('foo | string:$one'), '1')
+        self.assert_(eval('foo | exists:x'))
 
     def testEmptyPathSegmentRaisesCompilerError(self):
         CompilerError = self.engine.getCompilerError()
