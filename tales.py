@@ -541,7 +541,7 @@ class ExpressionEngine(object):
 
            class stringFuncs(object):
 
-              def __init__(self,context):
+              def __init__(self, context):
                  self.context = str(context)
 
               def upper(self):
