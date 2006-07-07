@@ -219,17 +219,17 @@ class Iterator(object):
         >>> it.next()
         True
         >>> it.even()
-        False
-        >>> it.next()
-        True
-        >>> it.even()
         True
         >>> it.next()
         True
         >>> it.even()
         False
+        >>> it.next()
+        True
+        >>> it.even()
+        True
         """
-        return not (self._nextIndex % 2)
+        return not ((self._nextIndex - 1) % 2)
 
     def odd(self):
         """Test whether the position is odd
@@ -239,17 +239,17 @@ class Iterator(object):
         >>> it.next()
         True
         >>> it.odd()
-        True
-        >>> it.next()
-        True
-        >>> it.odd()
         False
         >>> it.next()
         True
         >>> it.odd()
         True
+        >>> it.next()
+        True
+        >>> it.odd()
+        False
         """
-        return bool(self._nextIndex % 2)
+        return bool((self._nextIndex - 1) % 2)
 
     def parity(self):
         """Return 'odd' or 'even' depending on the position's parity
