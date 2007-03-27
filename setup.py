@@ -34,7 +34,6 @@ setup(name='zope.tales',
       package_dir = {'': 'src'},
 
       namespace_packages=['zope',],
-      tests_require = ['zope.testing'],
       install_requires=['setuptools',
                         'zope.interface',
                         'zope.tal'],
