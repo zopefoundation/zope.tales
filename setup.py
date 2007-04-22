@@ -21,7 +21,7 @@ import os
 from setuptools import setup, find_packages
 
 setup(name='zope.tales',
-      version='3.4dev',
+      version = '3.4.0a1',
 
       url='http://svn.zope.org/zope.tales',
       license='ZPL 2.1',
