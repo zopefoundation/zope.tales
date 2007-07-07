@@ -172,10 +172,17 @@ class HarnessMethod(object):
         self._testcase.assert_(akwargs == kwargs,
                                 "Harness method keyword args")
 
+from zope.testing import renormalizing
+import re
 
 def test_suite():
+
+    checker = renormalizing.RENormalizing([
+        (re.compile(r"object of type 'MyIter' has no len\(\)"),
+		    r"len() of unsized object"),
+        ])
     suite = unittest.makeSuite(TALESTests)
-    suite.addTest(DocTestSuite("zope.tales.tales"))
+    suite.addTest(DocTestSuite("zope.tales.tales",checker=checker))
     return suite
 
 
