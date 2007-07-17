@@ -16,10 +16,12 @@
 $Id$
 """
 import unittest
+import re
 
 from zope.tales import tales
 from zope.tales.tests.simpleexpr import SimpleExpr
 from zope.testing.doctestunit import DocTestSuite
+from zope.testing import renormalizing
 
 
 class TALESTests(unittest.TestCase):
@@ -174,8 +176,12 @@ class HarnessMethod(object):
 
 
 def test_suite():
+    checker = renormalizing.RENormalizing([
+  	(re.compile(r"object of type 'MyIter' has no len\(\)"),
+  	            r"len() of unsized object"),
+  	 ])
     suite = unittest.makeSuite(TALESTests)
-    suite.addTest(DocTestSuite("zope.tales.tales"))
+    suite.addTest(DocTestSuite("zope.tales.tales",checker=checker))
     return suite
 
 
