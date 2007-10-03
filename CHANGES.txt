@@ -1,16 +1,26 @@
-zope.tales Package Changelog
-============================
+=======
+CHANGES
+=======
 
-zope.tales version 3.2.0 (2006/01/05)
--------------------------------------
+3.4.0 (2007-10-03)
+------------------
 
-Corresponds to the verison of the zope.tales package shipped as part of
-the Zope 3.2.0 release.
+- Updated package setup.
 
-Documentation / test fixes.
+- Initial release outside the Zope 3 trunk.
 
-zope.tales version 3.0.0 (2004/11/07)
--------------------------------------
 
-Corresponds to the verison of the zope.tales package shipped as part of
-the Zope X3.0.0 release.
+3.2.0 (2006-01-05)
+------------------
+
+- Corresponds to the verison of the zope.tales package shipped as part of
+  the Zope 3.2.0 release.
+
+- Documentation / test fixes.
+
+
+3.0.0 (2004-11-07)
+------------------
+
+- Corresponds to the verison of the zope.tales package shipped as part of
+  the Zope X3.0.0 release.
