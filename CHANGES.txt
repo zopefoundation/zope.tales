@@ -1,6 +1,32 @@
 zope.tales Package Changelog
 ============================
 
+zope.tales version 3.3.2 (2007/07/03)
+---------------------------------------
+
+- Corresponds to the verison of the zope.tales package shipped as part of
+  the Zope 3.3.2 release.
+
+- tales.py:  ZPT repeat "oddness" bug
+  (http://www.zope.org/Collectors/Zope3-dev/667).
+
+- tales.py:  The default Context implementation wasn't fully complying with
+  ITALExpressionEngine:  it was missing the 'translate()' method.
+
+- tales.py:  Make the default TALES context aware of other forms of text
+  (e.g.  i18n Messages).
+
+- expressions.py:  TALES PathExpr calls result of alternate subexpression
+  (http://www.zope.org/Collectors/Zope3-dev/638).
+
+- expressions.py:  Path expressions with a non-path final alternate no
+  longer tries to call a value returned by that alternate
+  (http://www.zope.org/Collectors/Zope3-dev/538).
+
+- expressions.py:  TALES PathExpr didn't call old style classes
+  (http://www.zope.org/Collectors/Zope3-dev/635).
+
+
 zope.tales version 3.2.0.2 (2006/04/15)
 ---------------------------------------
 

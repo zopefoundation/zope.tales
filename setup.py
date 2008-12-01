@@ -26,9 +26,9 @@ except ImportError, e:
     from distutils.core import setup, Extension
 
 setup(name='zope.tales',
-      version='3.2.0.2',
+      version='3.3.2',
 
-      url='http://svn.zope.org/zope.tales/tags/3.2.0',
+      url='http://svn.zope.org/zope.tales/tags/3.3.2',
       license='ZPL 2.1',
       description='Zope 3 Template Application Language Expression Syntax '
                   '(TALES)',
