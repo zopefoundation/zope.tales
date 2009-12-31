@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
@@ -66,6 +67,7 @@ class ExpressionTestBase(unittest.TestCase):
               B = 2,
               adapterTest = at,
               dynamic = 'z',
+              eightBits = 'déjà vu',
               ErrorGenerator = ErrorGenerator(),
               )
             )
@@ -125,7 +127,9 @@ class ExpressionTests(ExpressionTestBase):
     def testString(self):
         expr = self.engine.compile('string:Fred')
         context=self.context
-        self.assertEqual(expr(context), 'Fred')
+        result = expr(context)
+        self.assertEqual(result, 'Fred')
+        self.failUnless(isinstance(result, str))
 
     def testStringSub(self):
         expr = self.engine.compile('string:A$B')
@@ -136,6 +140,26 @@ class ExpressionTests(ExpressionTestBase):
         expr = self.engine.compile('string:a ${x/y} b ${y/z} c')
         context=self.context
         self.assertEqual(expr(context), 'a yikes b 3 c')
+    
+    def testString8Bits(self):
+        # Simple eight bit string interpolation should just work. 
+        expr = self.engine.compile('string:a ${eightBits}')
+        context=self.context
+        self.assertEqual(expr(context), 'a déjà vu')
+
+    def testStringUnicode(self):
+        # Unicode string expressions should return unicode strings
+        expr = self.engine.compile(u'string:Fred')
+        context=self.context
+        result = expr(context)
+        self.assertEqual(result, u'Fred')
+        self.failUnless(isinstance(result, unicode))
+
+    def testStringFailureWhenMixed(self):
+        # Mixed Unicode and 8bit string interpolation fails with a
+        # UnicodeDecodeError, assuming there is no default encoding
+        expr = self.engine.compile(u'string:a ${eightBits}')
+        self.assertRaises(UnicodeDecodeError, expr, self.context)
 
     def testPython(self):
         expr = self.engine.compile('python: 2 + 2')
