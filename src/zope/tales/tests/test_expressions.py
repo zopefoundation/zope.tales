@@ -271,7 +271,7 @@ class FunctionTests(ExpressionTestBase):
                           self.engine.compile,
                           'namespace:title')
 
-        # In an ideal world ther ewould be another test here to test
+        # In an ideal world there would be another test here to test
         # that a nicer error was raised when you tried to use
         # something like:
         # standard:namespace:upper
