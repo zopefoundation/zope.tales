@@ -29,15 +29,15 @@ def read(*rnames):
 setup(name='zope.tales',
       version = '3.5.0dev',
       author='Zope Corporation and Contributors',
-      author_email='zope3-dev@zope.org',
-      description='Zope 3 Template Application Language Expression Syntax '
+      author_email='zope-dev@zope.org',
+      description='Zope Template Application Language Expression Syntax '
                   '(TALES)',
       long_description=(
           read('README.txt')
           + '\n\n' +
           read('CHANGES.txt')
           ),
-      keywords = "zope3 template xml tales",
+      keywords = "zope template xml tales",
       classifiers = [
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
@@ -48,7 +48,7 @@ setup(name='zope.tales',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
           'Framework :: Zope3'],
-      url='http://cheeseshop.python.org/pypi/zope.tales',
+      url='http://pypi.python.org/pypi/zope.tales',
       license='ZPL 2.1',
       packages=find_packages('src'),
       package_dir = {'': 'src'},
