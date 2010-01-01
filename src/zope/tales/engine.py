@@ -18,7 +18,11 @@ Each expression engine can have its own expression types and base names.
 $Id$
 """
 from zope.tales.tales import ExpressionEngine
-from zope.tales.expressions import PathExpr, StringExpr, NotExpr, DeferExpr
+from zope.tales.expressions import PathExpr
+from zope.tales.expressions import StringExpr
+from zope.tales.expressions import NotExpr
+from zope.tales.expressions import DeferExpr
+from zope.tales.expressions import LazyExpr
 from zope.tales.expressions import SimpleModuleImporter
 from zope.tales.pythonexpr import PythonExpr
 
@@ -31,6 +35,7 @@ def Engine():
     reg('python', PythonExpr)
     reg('not', NotExpr)
     reg('defer', DeferExpr)
+    reg('lazy', LazyExpr)
     e.registerBaseName('modules', SimpleModuleImporter())
     return e
 

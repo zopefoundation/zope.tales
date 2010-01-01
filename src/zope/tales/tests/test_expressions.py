@@ -229,6 +229,18 @@ class ExpressionTests(ExpressionTestBase):
         check('string:foo${ab/cd | c/d | e//f}bar')
         check('string:foo${ab/cd | c/d | e/f/}bar')
 
+    def test_defer_expression_returns_wrapper(self):
+        from zope.tales.expressions import DeferWrapper
+        expr = self.engine.compile('defer: b')
+        context=self.context
+        self.failUnless(isinstance(expr(context), DeferWrapper))
+
+    def test_lazy_expression_returns_wrapper(self):
+        from zope.tales.expressions import LazyWrapper
+        expr = self.engine.compile('lazy: b')
+        context=self.context
+        self.failUnless(isinstance(expr(context), LazyWrapper))
+
 
 class FunctionTests(ExpressionTestBase):
 
@@ -319,7 +331,6 @@ class FunctionTests(ExpressionTestBase):
             self.fail('Engine accepted invalid namespace name')
 
     def testBadFunction(self):
-        from zope.tales.tales import CompilerError
         # namespace is fine, adapter is not defined
         try:
             expr = self.engine.compile('adapterTest/namespace:title')

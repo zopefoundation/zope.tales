@@ -2,13 +2,17 @@
 CHANGES
 =======
 
+3.5.0 (unreleased)
+------------------
+
+- Ported the lazy expression from Products.PageTemplates.
+
 3.4.0 (2007-10-03)
 ------------------
 
 - Updated package setup.
 
 - Initial release outside the Zope 3 trunk.
-
 
 3.2.0 (2006-01-05)
 ------------------
@@ -17,7 +21,6 @@ CHANGES
   the Zope 3.2.0 release.
 
 - Documentation / test fixes.
-
 
 3.0.0 (2004-11-07)
 ------------------

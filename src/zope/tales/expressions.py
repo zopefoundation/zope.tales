@@ -309,6 +309,29 @@ class DeferExpr(object):
         return '<DeferExpr %s>' % `self._s`
 
 
+class LazyWrapper(DeferWrapper):
+    """Wrapper for lazy: expression
+    """
+    def __init__(self, expr, econtext):
+        DeferWrapper.__init__(self, expr, econtext)
+        self._result = _marker
+
+    def __call__(self):
+        r = self._result
+        if r is _marker:
+            self._result = r = self._expr(self._econtext)
+        return r
+
+class LazyExpr(DeferExpr):
+    """lazy: expression handler for lazy initialization of expressions
+    """
+    def __call__(self, econtext):
+        return LazyWrapper(self._c, econtext)
+
+    def __repr__(self):
+        return 'lazy:%s' % `self._s`
+
+
 class SimpleModuleImporter(object):
     """Minimal module importer with no security."""
 
