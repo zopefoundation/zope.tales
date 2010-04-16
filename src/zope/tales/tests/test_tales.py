@@ -20,7 +20,7 @@ import re
 
 from zope.tales import tales
 from zope.tales.tests.simpleexpr import SimpleExpr
-from zope.testing.doctestunit import DocTestSuite
+from doctest import DocTestSuite
 from zope.testing import renormalizing
 
 
