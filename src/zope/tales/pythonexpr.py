@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Generic Python Expression Handler
-
-$Id$
 """
 
 class PythonExpr(object):

@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Basic Page Template expression types.
-
-$Id$
 """
 import re, types
 

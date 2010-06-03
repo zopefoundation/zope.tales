@@ -13,8 +13,6 @@
 #
 ##############################################################################
 """Default TALES expression implementations tests.
-
-$Id$
 """
 import unittest
 

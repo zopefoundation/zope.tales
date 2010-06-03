@@ -14,8 +14,6 @@
 """TALES
 
 An implementation of a TAL expression engine
-
-$Id$
 """
 __docformat__ = "reStructuredText"
 import re

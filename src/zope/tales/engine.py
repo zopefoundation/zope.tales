@@ -14,8 +14,6 @@
 """Expression engine configuration and registration.
 
 Each expression engine can have its own expression types and base names.
-
-$Id$
 """
 from zope.tales.tales import ExpressionEngine
 from zope.tales.expressions import PathExpr

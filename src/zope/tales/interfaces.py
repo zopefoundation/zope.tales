@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Interface that describes the 'macros' attribute of a PageTemplate.
-
-$Id$
 """
 from zope.interface import Interface
 
