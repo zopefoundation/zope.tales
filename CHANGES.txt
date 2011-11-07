@@ -4,6 +4,7 @@ CHANGES
 3.5.2 (unreleased)
 ------------------
 
+- Fixed documentation link in README.txt
 
 3.5.1 (2010-04-30)
 ------------------
