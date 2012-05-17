@@ -19,7 +19,7 @@ import unittest
 from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.tales.tales import Undefined
-from zope.interface import implements
+from zope.interface import implementer
 
 class Data(object):
 
@@ -246,8 +246,8 @@ class FunctionTests(ExpressionTestBase):
         ExpressionTestBase.setUp(self)
 
         # a test namespace
+        @implementer(ITALESFunctionNamespace)
         class TestNameSpace(object):
-            implements(ITALESFunctionNamespace)
 
             def __init__(self, context):
                 self.context = context

@@ -18,19 +18,22 @@ An implementation of a TAL expression engine
 __docformat__ = "reStructuredText"
 import re
 
-from zope.interface import implements
+from zope.interface import implementer
 
 try:
-    from zope import tal
-except ImportError:
-    tal = None
-
-if tal:
     from zope.tal.interfaces import ITALExpressionEngine
     from zope.tal.interfaces import ITALExpressionCompiler
     from zope.tal.interfaces import ITALExpressionErrorInfo
-    from zope.tales.interfaces import ITALESIterator
+except ImportError:
+    from zope.interface import Interface
+    class ITALExpressionEngine(Interface):
+        pass
+    class ITALExpressionCompiler(Interface):
+        pass
+    class ITALExpressionErrorInfo(Interface):
+        pass
 
+from zope.tales.interfaces import ITALESIterator
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
 _parse_expr = re.compile(r"(%s):" % NAME_RE).match
@@ -52,12 +55,10 @@ class RegistrationError(Exception):
 
 _default = object()
 
+@implementer(ITALESIterator)
 class Iterator(object):
     """TALES Iterator
     """
-
-    if tal:
-        implements(ITALESIterator)
 
     def __init__(self, name, seq, context):
         """Construct an iterator
@@ -485,10 +486,9 @@ class Iterator(object):
         return len(self._seq)
 
 
+@implementer(ITALExpressionErrorInfo)
 class ErrorInfo(object):
     """Information about an exception passed to an on-error handler."""
-    if tal:
-        implements(ITALExpressionErrorInfo)
 
     def __init__(self, err, position=(None, None)):
         if isinstance(err, Exception):
@@ -501,6 +501,7 @@ class ErrorInfo(object):
         self.offset = position[1]
 
 
+@implementer(ITALExpressionCompiler)
 class ExpressionEngine(object):
     '''Expression Engine
 
@@ -509,8 +510,6 @@ class ExpressionEngine(object):
     these handlers.  It can provide an expression Context, which is
     capable of holding state and evaluating compiled expressions.
     '''
-    if tal:
-        implements(ITALExpressionCompiler)
 
     def __init__(self):
         self.types = {}
@@ -607,16 +606,13 @@ class ExpressionEngine(object):
         return CompilerError
 
 
+@implementer(ITALExpressionEngine)
 class Context(object):
     '''Expression Context
 
     An instance of this class holds context information that it can
     use to evaluate compiled expressions.
     '''
-
-    if tal:
-        implements(ITALExpressionEngine)
-
     position = (None, None)
     source_file = None
 

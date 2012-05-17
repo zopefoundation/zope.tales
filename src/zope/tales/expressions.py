@@ -15,7 +15,7 @@
 """
 import re, types
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
 from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
 
@@ -137,9 +137,9 @@ class SubPathExpr(object):
         return ob
 
 
+@implementer(ITALESExpression)
 class PathExpr(object):
     """One or more subpath expressions, separated by '|'."""
-    implements(ITALESExpression)
 
     # _default_type_names contains the expression type names this
     # class is usually registered for.
@@ -224,8 +224,8 @@ class PathExpr(object):
 
 _interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/[^}]*)*)}' % {'n': NAME_RE})
 
+@implementer(ITALESExpression)
 class StringExpr(object):
-    implements(ITALESExpression)
 
     def __init__(self, name, expr, engine):
         self._s = expr
@@ -267,8 +267,8 @@ class StringExpr(object):
         return '<StringExpr %s>' % `self._s`
 
 
+@implementer(ITALESExpression)
 class NotExpr(object):
-    implements(ITALESExpression)
 
     def __init__(self, name, expr, engine):
         self._s = expr = expr.lstrip()
@@ -293,8 +293,8 @@ class DeferWrapper(object):
         return self._expr(self._econtext)
 
 
+@implementer(ITALESExpression)
 class DeferExpr(object):
-    implements(ITALESExpression)
 
     def __init__(self, name, expr, compiler):
         self._s = expr = expr.lstrip()
