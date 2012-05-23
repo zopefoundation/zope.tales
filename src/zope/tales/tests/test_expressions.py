@@ -136,11 +136,24 @@ class ExpressionTests(ExpressionTestBase):
         context=self.context
         self.assertEqual(expr(context), 'A2')
 
+    def testStringSub_w_python(self):
+        CompilerError = self.engine.getCompilerError()
+        self.assertRaises(CompilerError,
+                          self.engine.compile,
+                                'string:${python:1}')
+
     def testStringSubComplex(self):
         expr = self.engine.compile('string:a ${x/y} b ${y/z} c')
         context=self.context
         self.assertEqual(expr(context), 'a yikes b 3 c')
-    
+
+    def testStringSubComplex_w_miss_and_python(self):
+        # See https://bugs.launchpad.net/zope.tales/+bug/1002242
+        CompilerError = self.engine.getCompilerError()
+        self.assertRaises(CompilerError,
+                          self.engine.compile,
+                            'string:${nothig/nothing|python:1}')
+ 
     def testString8Bits(self):
         # Simple eight bit string interpolation should just work. 
         expr = self.engine.compile('string:a ${eightBits}')
