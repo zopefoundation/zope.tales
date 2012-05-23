@@ -10,6 +10,12 @@ CHANGES
 - Dropped support for Python 2.4 and 2.5.
 
 - Fixed documentation link in README.txt
+ 
+3.5.2 (2012-05-23)
+------------------
+ 
+- Subexpressions of a 'string:' expression can be only path expressions.
+  https://bugs.launchpad.net/zope.tales/+bug/1002242
 
 3.5.1 (2010-04-30)
 ------------------
