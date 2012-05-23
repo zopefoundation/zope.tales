@@ -5,7 +5,8 @@ CHANGES
 3.4.1 (unreleased)
 ------------------
 
-- TBD
+- Subexpressions of a 'string:' expression can be only path expressions.
+  https://bugs.launchpad.net/zope.tales/+bug/1002242
 
 3.4.0 (2007-10-03)
 ------------------

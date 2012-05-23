@@ -224,7 +224,9 @@ class PathExpr(object):
 
 
 
-_interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/[^}]*)*)}' % {'n': NAME_RE})
+_interp = re.compile(
+        r'\$(%(n)s)|\${(%(n)s(?:/[^}|]*)*(?:\|%(n)s(?:/[^}|]*)*)*)}'
+            % {'n': NAME_RE})
 
 class StringExpr(object):
     implements(ITALESExpression)
