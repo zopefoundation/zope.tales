@@ -21,7 +21,7 @@ class PythonExpr(object):
         self.text = text
         try:
             code = self._compile(text, '<string>')
-        except SyntaxError, e:
+        except SyntaxError as e:
             raise engine.getCompilerError()(str(e))
         self._code = code
         self._varnames = code.co_names

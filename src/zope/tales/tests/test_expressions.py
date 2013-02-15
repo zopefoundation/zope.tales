@@ -14,12 +14,21 @@
 ##############################################################################
 """Default TALES expression implementations tests.
 """
+import sys
 import unittest
 
 from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.tales.tales import Undefined
 from zope.interface import implementer
+
+try:
+    unicode
+except NameError:
+    # Py3: Make the unicode name available again.
+    unicode = str
+
+PY3 = sys.version_info[0] == 3
 
 class Data(object):
 
@@ -33,11 +42,11 @@ class Data(object):
 class ErrorGenerator:
 
     def __getitem__(self, name):
-        import __builtin__
+        from six.moves import builtins
         if name == 'Undefined':
             e = Undefined
         else:
-            e = getattr(__builtin__, name, None)
+            e = getattr(builtins, name, None)
         if e is None:
             e = SystemError
         raise e('mess')
@@ -65,7 +74,7 @@ class ExpressionTestBase(unittest.TestCase):
               B = 2,
               adapterTest = at,
               dynamic = 'z',
-              eightBits = 'déjà vu',
+              eightBits = u'déjà vu'.encode('utf-8'),
               ErrorGenerator = ErrorGenerator(),
               )
             )
@@ -73,7 +82,7 @@ class ExpressionTestBase(unittest.TestCase):
         self.engine = Engine
 
 
-class ExpressionTests(ExpressionTestBase):        
+class ExpressionTests(ExpressionTestBase):
 
     def testSimple(self):
         expr = self.engine.compile('x')
@@ -104,12 +113,12 @@ class ExpressionTests(ExpressionTestBase):
         expr = self.engine.compile('x/y/?dynamic')
         context=self.context
         self.assertEqual(expr(context),context.vars['x'].y.z)
-        
+
     def testBadInitalDynamic(self):
         from zope.tales.tales import CompilerError
         try:
             self.engine.compile('?x')
-        except CompilerError,e:
+        except CompilerError as e:
             self.assertEqual(e.args[0],
                              'Dynamic name specified in first subpath element')
         else:
@@ -121,7 +130,7 @@ class ExpressionTests(ExpressionTestBase):
         self.context.vars['oldstyleclass'] = AnOldStyleClass
         expr = self.engine.compile('oldstyleclass')
         self.assert_(isinstance(expr(self.context), AnOldStyleClass))
-            
+
     def testString(self):
         expr = self.engine.compile('string:Fred')
         context=self.context
@@ -151,9 +160,12 @@ class ExpressionTests(ExpressionTestBase):
         self.assertRaises(CompilerError,
                           self.engine.compile,
                             'string:${nothig/nothing|python:1}')
- 
+
     def testString8Bits(self):
-        # Simple eight bit string interpolation should just work. 
+        # Simple eight bit string interpolation should just work.
+        if PY3:
+            # Py3: We simply do not handle 8-bit strings.
+            return
         expr = self.engine.compile('string:a ${eightBits}')
         context=self.context
         self.assertEqual(expr(context), 'a déjà vu')
@@ -169,6 +181,9 @@ class ExpressionTests(ExpressionTestBase):
     def testStringFailureWhenMixed(self):
         # Mixed Unicode and 8bit string interpolation fails with a
         # UnicodeDecodeError, assuming there is no default encoding
+        if PY3:
+            # Py3: We simply do not handle 8-bit strings.
+            return
         expr = self.engine.compile(u'string:a ${eightBits}')
         self.assertRaises(UnicodeDecodeError, expr, self.context)
 
@@ -277,8 +292,8 @@ class FunctionTests(ExpressionTestBase):
             def __getitem__(self,key):
                 if key=='jump':
                     return self.context._d
-                raise KeyError,key
-            
+                raise KeyError(key)
+
         self.TestNameSpace = TestNameSpace
         self.engine.registerFunctionNamespace('namespace', self.TestNameSpace)
 
@@ -287,7 +302,7 @@ class FunctionTests(ExpressionTestBase):
     def testSetEngine(self):
         expr = self.engine.compile('adapterTest/namespace:engine')
         self.assertEqual(expr(self.context), self.context)
-                
+
     def testGetFunctionNamespace(self):
         self.assertEqual(
             self.engine.getFunctionNamespace('namespace'),
@@ -306,7 +321,7 @@ class FunctionTests(ExpressionTestBase):
         from zope.tales.tales import CompilerError
         try:
             self.engine.compile('adapterTest/badnamespace:title')
-        except CompilerError,e:
+        except CompilerError as e:
             self.assertEqual(e.args[0],'Unknown namespace "badnamespace"')
         else:
             self.fail('Engine accepted unknown namespace')
@@ -335,7 +350,7 @@ class FunctionTests(ExpressionTestBase):
         from zope.tales.tales import CompilerError
         try:
             self.engine.compile('adapterTest/1foo:bar')
-        except CompilerError,e:
+        except CompilerError as e:
             self.assertEqual(e.args[0],
                              'Invalid namespace name "1foo"')
         else:
@@ -346,13 +361,13 @@ class FunctionTests(ExpressionTestBase):
         try:
             expr = self.engine.compile('adapterTest/namespace:title')
             expr(self.context)
-        except KeyError,e: 
+        except KeyError as e:
             self.assertEquals(e.args[0],'title')
         else:
             self.fail('Engine accepted unknown function')
 
     ## runtime tests
-            
+
     def testNormalFunction(self):
         expr = self.engine.compile('adapterTest/namespace:upper')
         self.assertEqual(expr(self.context), 'YIKES')

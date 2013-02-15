@@ -13,7 +13,6 @@
 ##############################################################################
 """ Tests for zope.tales.expressions.simpleTraverse
 """
-
 from unittest import TestCase, TestSuite, makeSuite, main
 from zope.tales.expressions import simpleTraverse
 
@@ -27,7 +26,7 @@ class ItemTraversable(object):
     def __getitem__(self, name):
         if name == 'attr':
             return 'foo'
-        raise KeyError, name
+        raise KeyError(name)
 
 class AllTraversable(AttrTraversable, ItemTraversable):
     """Traversable by attribute and item access"""
@@ -43,7 +42,7 @@ def getitem(ob, name, default=_marker):
     except KeyError:
         if default is not _marker:
             return default
-        raise KeyError, name
+        raise KeyError(name)
     else:
         return item
 

@@ -19,6 +19,7 @@ __docformat__ = "reStructuredText"
 import re
 
 from zope.interface import implementer
+import six
 
 try:
     from zope.tal.interfaces import ITALExpressionEngine
@@ -106,7 +107,7 @@ class Iterator(object):
         # but we can't know that without trying to get it. :(
         self._last = False
         try:
-            self._next = i.next()
+            self._next = six.advance_iterator(i)
         except StopIteration:
             self._done = True
         else:
@@ -158,7 +159,7 @@ class Iterator(object):
             return False
         self._item = v = self._next
         try:
-            self._next = self._iter.next()
+            self._next = six.advance_iterator(self._iter)
         except StopIteration:
             self._done = True
             self._last = True
@@ -292,7 +293,7 @@ class Iterator(object):
         """
         index = self._nextIndex - 1
         if index < 0:
-            raise TypeError("No iteration position") 
+            raise TypeError("No iteration position")
         s = ''
         while 1:
             index, off = divmod(index, radix)
@@ -449,7 +450,7 @@ class Iterator(object):
 
         """
         if self._nextIndex == 0:
-            raise TypeError("No iteration position") 
+            raise TypeError("No iteration position")
         return self._item
 
     def length(self):
@@ -471,17 +472,19 @@ class Iterator(object):
 
         >>> class MyIter(object):
         ...     def __init__(self, seq):
-        ...         self._next = iter(seq).next
+        ...         self._iter = iter(seq)
         ...     def __iter__(self):
         ...         return self
-        ...     def next(self):
-        ...         return self._next()
+        ...     def __next__(self):
+        ...         return next(self._iter)
+        ...     next = __next__
         >>> it = Iterator('foo', MyIter({"apple":1, "pear":2}), context)
-        >>> it.length()
-        Traceback (most recent call last):
-        ...
-        TypeError: len() of unsized object
-
+        >>> try:
+        ...     it.length()
+        ... except TypeError:
+        ...     pass
+        ... else:
+        ...     print('Expected TypeError')
         """
         return len(self._seq)
 
@@ -520,13 +523,13 @@ class ExpressionEngine(object):
     def registerFunctionNamespace(self, namespacename, namespacecallable):
         """Register a function namespace
 
-        namespace - a string containing the name of the namespace to 
+        namespace - a string containing the name of the namespace to
                     be registered
 
         namespacecallable - a callable object which takes the following
                             parameter:
 
-                            context - the object on which the functions 
+                            context - the object on which the functions
                                       provided by this namespace will
                                       be called
 
@@ -639,7 +642,7 @@ class Context(object):
 
     def beginScope(self):
         self.vars = vars = self.vars.copy()
-        self._vars_stack.append(vars)        
+        self._vars_stack.append(vars)
         self._scope_stack.append([])
 
     def endScope(self):
@@ -648,7 +651,7 @@ class Context(object):
 
         scope = self._scope_stack.pop()
         # Pop repeat variables, if any
-        i = len(scope) 
+        i = len(scope)
         while i:
             i = i - 1
             name, value = scope[i]

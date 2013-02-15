@@ -84,7 +84,7 @@ class TALESTests(unittest.TestCase):
         e.registerType('simple', SimpleExpr)
         ce = e.compile('simple:x')
         self.assert_( ce(None) == ('simple', 'x'), (
-            'Improperly compiled expression %s.' % `ce`))
+            'Improperly compiled expression %s.' % repr(ce)))
 
     def testGetContext(self):
         # Test Context creation
@@ -95,13 +95,13 @@ class TALESTests(unittest.TestCase):
     def getContext(self, **kws):
         e = tales.ExpressionEngine()
         e.registerType('simple', SimpleExpr)
-        return apply(e.getContext, (), kws)
+        return e.getContext(*(), **kws)
 
     def testContext0(self):
         # Test use of Context
         se = self.getContext().evaluate('simple:x')
         self.assert_( se == ('simple', 'x'), (
-            'Improperly evaluated expression %s.' % `se`))
+            'Improperly evaluated expression %s.' % repr(se)))
 
     def testVariables(self):
         # Test variables

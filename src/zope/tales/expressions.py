@@ -13,7 +13,10 @@
 ##############################################################################
 """Basic Page Template expression types.
 """
-import re, types
+import re
+import six
+import sys
+import types
 
 from zope.interface import implementer
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
@@ -23,6 +26,8 @@ Undefs = (Undefined, AttributeError, LookupError, TypeError)
 
 _marker = object()
 namespace_re = re.compile(r'(\w+):(.+)')
+
+PY2 = sys.version_info[0] == 2
 
 def simpleTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
@@ -91,7 +96,7 @@ class SubPathExpr(object):
             # check for initial function
             raise engine.getCompilerError()(
                 'Namespace function specified in first subpath element')
-        elif isinstance(first, basestring):
+        elif isinstance(first, six.string_types):
             # check for initial ?
             raise engine.getCompilerError()(
                 'Dynamic name specified in first subpath element')
@@ -120,11 +125,11 @@ class SubPathExpr(object):
         for element in compiled_path:
             if isinstance(element, tuple):
                 ob = self._traverser(ob, element, econtext)
-            elif isinstance(element, basestring):
+            elif isinstance(element, six.string_types):
                 val = vars[element]
                 # If the value isn't a string, assume it's a sequence
                 # of path names.
-                if isinstance(val, basestring):
+                if isinstance(val, six.string_types):
                     val = (val,)
                 ob = self._traverser(ob, val, econtext)
             elif callable(element):
@@ -204,8 +209,9 @@ class PathExpr(object):
         # eats babies, err, exceptions.  In addition to that, we
         # support calling old style classes which don't have a
         # __call__.
-        if (getattr(ob, '__call__', _marker) is not _marker
-            or isinstance(ob, types.ClassType)):
+        if getattr(ob, '__call__', _marker) is not _marker:
+            return ob()
+        if PY2 and isinstance(ob, types.ClassType):
             return ob()
         return ob
 
@@ -215,10 +221,10 @@ class PathExpr(object):
         return self._eval(econtext)
 
     def __str__(self):
-        return '%s expression (%s)' % (self._name, `self._s`)
+        return '%s expression (%s)' % (self._name, repr(self._s))
 
     def __repr__(self):
-        return '<PathExpr %s:%s>' % (self._name, `self._s`)
+        return '<PathExpr %s:%s>' % (self._name, repr(self._s))
 
 
 
@@ -263,10 +269,10 @@ class StringExpr(object):
         return self._expr % tuple(vvals)
 
     def __str__(self):
-        return 'string expression (%s)' % `self._s`
+        return 'string expression (%s)' % repr(self._s)
 
     def __repr__(self):
-        return '<StringExpr %s>' % `self._s`
+        return '<StringExpr %s>' % repr(self._s)
 
 
 @implementer(ITALESExpression)
@@ -280,7 +286,7 @@ class NotExpr(object):
         return int(not econtext.evaluateBoolean(self._c))
 
     def __repr__(self):
-        return '<NotExpr %s>' % `self._s`
+        return '<NotExpr %s>' % repr(self._s)
 
 
 class DeferWrapper(object):
@@ -306,7 +312,7 @@ class DeferExpr(object):
         return DeferWrapper(self._c, econtext)
 
     def __repr__(self):
-        return '<DeferExpr %s>' % `self._s`
+        return '<DeferExpr %s>' % repr(self._s)
 
 
 class LazyWrapper(DeferWrapper):
@@ -329,7 +335,7 @@ class LazyExpr(DeferExpr):
         return LazyWrapper(self._c, econtext)
 
     def __repr__(self):
-        return 'lazy:%s' % `self._s`
+        return 'lazy:%s' % repr(self._s)
 
 
 class SimpleModuleImporter(object):
