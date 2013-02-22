@@ -16,6 +16,7 @@
 import unittest
 import re
 
+import six
 from zope.tales import tales
 from zope.tales.tests.simpleexpr import SimpleExpr
 from doctest import DocTestSuite
@@ -28,7 +29,7 @@ class TALESTests(unittest.TestCase):
         # Test sample Iterator class
         context = Harness(self)
         it = tales.Iterator('name', (), context)
-        self.assert_( not it.next(), "Empty iterator")
+        self.assert_( not next(it), "Empty iterator")
         context._complete_()
 
     def testIterator1(self):
@@ -36,7 +37,7 @@ class TALESTests(unittest.TestCase):
         context = Harness(self)
         it = tales.Iterator('name', (1,), context)
         context._assert_('setLocal', 'name', 1)
-        self.assert_( it.next() and not it.next(), "Single-element iterator")
+        self.assert_(next(it) and not next(it), "Single-element iterator")
         context._complete_()
 
     def testIterator2(self):
@@ -46,8 +47,8 @@ class TALESTests(unittest.TestCase):
         for c in 'text':
             context._assert_('setLocal', 'text', c)
         for c in 'text':
-            self.assert_(it.next(), "Multi-element iterator")
-        self.assert_( not it.next(), "Multi-element iterator")
+            self.assert_(next(it), "Multi-element iterator")
+        self.assert_(not next(it), "Multi-element iterator")
         context._complete_()
 
     def testRegisterType(self):
@@ -97,11 +98,17 @@ class TALESTests(unittest.TestCase):
         e.registerType('simple', SimpleExpr)
         return e.getContext(*(), **kws)
 
-    def testContext0(self):
+    def testContext_evaluate(self):
         # Test use of Context
         se = self.getContext().evaluate('simple:x')
         self.assert_( se == ('simple', 'x'), (
             'Improperly evaluated expression %s.' % repr(se)))
+
+    def testContext_evaluateText(self):
+        # Test use of Context
+        se = self.getContext().evaluateText('simple:x')
+        self.assertTrue(isinstance(se, six.text_type))
+        self.assertEqual(se, "('simple', 'x')")
 
     def testVariables(self):
         # Test variables

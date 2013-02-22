@@ -113,7 +113,7 @@ class Iterator(object):
         else:
             self._done = False
 
-    def next(self):
+    def __next__(self):
         """Advance the iterator, if possible.
 
         >>> context = Context(ExpressionEngine(), {})
@@ -167,6 +167,8 @@ class Iterator(object):
         self._nextIndex += 1
         self._setLocal(self._name, v)
         return True
+
+    next = __next__  # Python 2 compatibility
 
     def index(self):
         """Get the iterator index
@@ -701,10 +703,10 @@ class Context(object):
         text = self.evaluate(expr)
         if text is self.getDefault() or text is None:
             return text
-        if isinstance(text, basestring):
+        if isinstance(text, six.string_types):
             # text could already be something text-ish, e.g. a Message object
             return text
-        return unicode(text)
+        return six.text_type(text)
 
     def evaluateStructure(self, expr):
         return self.evaluate(expr)
@@ -730,7 +732,7 @@ class Context(object):
     def translate(self, msgid, domain=None, mapping=None, default=None):
         # custom Context implementations are supposed to customize
         # this to call whichever translation routine they want to use
-        return unicode(msgid)
+        return six.text_type(msgid)
 
 
 class TALESTracebackSupplement(object):
