@@ -52,8 +52,8 @@ setup(name='zope.tales',
           + '\n\n' +
           read('CHANGES.txt')
       ),
-      keywords = "zope template xml tales",
-      classifiers = [
+      keywords="zope template xml tales",
+      classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
           'Intended Audience :: Developers',
@@ -73,17 +73,17 @@ setup(name='zope.tales',
       url='http://pypi.python.org/pypi/zope.tales',
       license='ZPL 2.1',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       namespace_packages=['zope'],
-      extras_require = dict(
+      extras_require=dict(
           test=['zope.testing'],
           tal=['zope.tal']),
       install_requires=[
           'setuptools',
           'zope.interface',
           'six'],
-      tests_require = ['zope.testing', 'zope.testrunner'],
-      test_suite = '__main__.alltests',
-      include_package_data = True,
-      zip_safe = False,
+      tests_require=['zope.testing', 'zope.testrunner'],
+      test_suite='__main__.alltests',
+      include_package_data=True,
+      zip_safe=False,
       )
