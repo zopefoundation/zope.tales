@@ -21,8 +21,10 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
 
 def alltests():
     import os
@@ -49,9 +51,9 @@ setup(name='zope.tales',
           read('README.txt')
           + '\n\n' +
           read('CHANGES.txt')
-          ),
-      keywords = "zope template xml tales",
-      classifiers = [
+      ),
+      keywords="zope template xml tales",
+      classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
           'Intended Audience :: Developers',
@@ -71,16 +73,17 @@ setup(name='zope.tales',
       url='http://pypi.python.org/pypi/zope.tales',
       license='ZPL 2.1',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       namespace_packages=['zope'],
-      extras_require = dict(
+      extras_require=dict(
           test=['zope.testing'],
           tal=['zope.tal']),
       install_requires=[
           'setuptools',
-          'zope.interface'],
-      tests_require = ['zope.testing', 'zope.testrunner'],
-      test_suite = '__main__.alltests',
-      include_package_data = True,
-      zip_safe = False,
+          'zope.interface',
+          'six'],
+      tests_require=['zope.testing', 'zope.testrunner'],
+      test_suite='__main__.alltests',
+      include_package_data=True,
+      zip_safe=False,
       )
