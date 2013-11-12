@@ -29,7 +29,7 @@ class TALESTests(unittest.TestCase):
         # Test sample Iterator class
         context = Harness(self)
         it = tales.Iterator('name', (), context)
-        self.assert_( not next(it), "Empty iterator")
+        self.assertTrue(not next(it), "Empty iterator")
         context._complete_()
 
     def testIterator1(self):
@@ -37,7 +37,7 @@ class TALESTests(unittest.TestCase):
         context = Harness(self)
         it = tales.Iterator('name', (1,), context)
         context._assert_('setLocal', 'name', 1)
-        self.assert_(next(it) and not next(it), "Single-element iterator")
+        self.assertTrue(next(it) and not next(it), "Single-element iterator")
         context._complete_()
 
     def testIterator2(self):
@@ -47,15 +47,15 @@ class TALESTests(unittest.TestCase):
         for c in 'text':
             context._assert_('setLocal', 'text', c)
         for c in 'text':
-            self.assert_(next(it), "Multi-element iterator")
-        self.assert_(not next(it), "Multi-element iterator")
+            self.assertTrue(next(it), "Multi-element iterator")
+        self.assertTrue(not next(it), "Multi-element iterator")
         context._complete_()
 
     def testRegisterType(self):
         # Test expression type registration
         e = tales.ExpressionEngine()
         e.registerType('simple', SimpleExpr)
-        self.assert_( e.getTypes()['simple'] == SimpleExpr)
+        self.assertEqual(e.getTypes()['simple'], SimpleExpr)
 
     def testRegisterTypeUnique(self):
         # Test expression type registration uniqueness
@@ -66,7 +66,7 @@ class TALESTests(unittest.TestCase):
         except tales.RegistrationError:
             pass
         else:
-            self.assert_( 0, "Duplicate registration accepted.")
+            self.fail("Duplicate registration accepted.")
 
     def testRegisterTypeNameConstraints(self):
         # Test constraints on expression type names
@@ -77,14 +77,14 @@ class TALESTests(unittest.TestCase):
             except tales.RegistrationError:
                 pass
             else:
-                self.assert_( 0, 'Invalid type name "%s" accepted.' % name)
+                self.fail('Invalid type name "%s" accepted.' % name)
 
     def testCompile(self):
         # Test expression compilation
         e = tales.ExpressionEngine()
         e.registerType('simple', SimpleExpr)
         ce = e.compile('simple:x')
-        self.assert_( ce(None) == ('simple', 'x'), (
+        self.assertEqual(ce(None), ('simple', 'x'), (
             'Improperly compiled expression %s.' % repr(ce)))
 
     def testGetContext(self):
@@ -101,7 +101,7 @@ class TALESTests(unittest.TestCase):
     def testContext_evaluate(self):
         # Test use of Context
         se = self.getContext().evaluate('simple:x')
-        self.assert_( se == ('simple', 'x'), (
+        self.assertEqual(se, ('simple', 'x'), (
             'Improperly evaluated expression %s.' % repr(se)))
 
     def testContext_evaluateText(self):
@@ -118,22 +118,22 @@ class TALESTests(unittest.TestCase):
         ctxt.setLocal('v2', 2)
 
         c = ctxt.vars
-        self.assert_( c['v1'] == 1, 'Variable "v1"')
+        self.assertEqual(c['v1'], 1, 'Variable "v1"')
 
         ctxt.beginScope()
         ctxt.setLocal('v1', 3)
         ctxt.setGlobal('g', 1)
 
         c = ctxt.vars
-        self.assert_( c['v1'] == 3, 'Inner scope')
-        self.assert_( c['v2'] == 2, 'Outer scope')
-        self.assert_( c['g'] == 1, 'Global')
+        self.assertEqual(c['v1'], 3, 'Inner scope')
+        self.assertEqual(c['v2'], 2, 'Outer scope')
+        self.assertEqual(c['g'], 1, 'Global')
 
         ctxt.endScope()
 
         c = ctxt.vars
-        self.assert_( c['v1'] == 1, "Uncovered local")
-        self.assert_( c['g'] == 1, "Global from inner scope")
+        self.assertEqual(c['v1'], 1, "Uncovered local")
+        self.assertEqual(c['g'], 1, "Global from inner scope")
 
         ctxt.endScope()
 
@@ -147,7 +147,7 @@ class Harness(object):
         self._callstack.append((name, args, kwargs))
 
     def _complete_(self):
-        self._testcase.assert_(len(self._callstack) == 0,
+        self._testcase.assertEqual(len(self._callstack), 0,
                                "Harness methods called")
 
     def __getattr__(self, name):
@@ -164,19 +164,19 @@ class HarnessMethod(object):
         self = self._harness
 
         cs = self._callstack
-        self._testcase.assert_(
+        self._testcase.assertTrue(
             len(cs),
             'Unexpected harness method call "%s".' % name
             )
-        self._testcase.assert_(
-            cs[0][0] == name, 
+        self._testcase.assertEqual(
+            cs[0][0], name, 
             'Harness method name "%s" called, "%s" expected.' %
             (name, cs[0][0])
             )
         
         name, aargs, akwargs = self._callstack.pop(0)
-        self._testcase.assert_(aargs == args, "Harness method arguments")
-        self._testcase.assert_(akwargs == kwargs,
+        self._testcase.assertEqual(aargs, args, "Harness method arguments")
+        self._testcase.assertEqual(akwargs, kwargs,
                                 "Harness method keyword args")
 
 

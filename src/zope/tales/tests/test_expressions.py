@@ -129,14 +129,14 @@ class ExpressionTests(ExpressionTestBase):
             pass
         self.context.vars['oldstyleclass'] = AnOldStyleClass
         expr = self.engine.compile('oldstyleclass')
-        self.assert_(isinstance(expr(self.context), AnOldStyleClass))
+        self.assertTrue(isinstance(expr(self.context), AnOldStyleClass))
 
     def testString(self):
         expr = self.engine.compile('string:Fred')
         context=self.context
         result = expr(context)
         self.assertEqual(result, 'Fred')
-        self.failUnless(isinstance(result, str))
+        self.assertTrue(isinstance(result, str))
 
     def testStringSub(self):
         expr = self.engine.compile('string:A$B')
@@ -176,7 +176,7 @@ class ExpressionTests(ExpressionTestBase):
         context=self.context
         result = expr(context)
         self.assertEqual(result, u'Fred')
-        self.failUnless(isinstance(result, unicode))
+        self.assertTrue(isinstance(result, unicode))
 
     def testStringFailureWhenMixed(self):
         # Mixed Unicode and 8bit string interpolation fails with a
@@ -223,7 +223,7 @@ class ExpressionTests(ExpressionTestBase):
                          self.context.vars['acallable'])
         self.assertEqual(eval('foo | string:x'), 'x')
         self.assertEqual(eval('foo | string:$one'), '1')
-        self.assert_(eval('foo | exists:x'))
+        self.assertTrue(eval('foo | exists:x'))
 
     def testEmptyPathSegmentRaisesCompilerError(self):
         CompilerError = self.engine.getCompilerError()
@@ -259,13 +259,13 @@ class ExpressionTests(ExpressionTestBase):
         from zope.tales.expressions import DeferWrapper
         expr = self.engine.compile('defer: b')
         context=self.context
-        self.failUnless(isinstance(expr(context), DeferWrapper))
+        self.assertTrue(isinstance(expr(context), DeferWrapper))
 
     def test_lazy_expression_returns_wrapper(self):
         from zope.tales.expressions import LazyWrapper
         expr = self.engine.compile('lazy: b')
         context=self.context
-        self.failUnless(isinstance(expr(context), LazyWrapper))
+        self.assertTrue(isinstance(expr(context), LazyWrapper))
 
 
 class FunctionTests(ExpressionTestBase):
@@ -362,7 +362,7 @@ class FunctionTests(ExpressionTestBase):
             expr = self.engine.compile('adapterTest/namespace:title')
             expr(self.context)
         except KeyError as e:
-            self.assertEquals(e.args[0],'title')
+            self.assertEqual(e.args[0],'title')
         else:
             self.fail('Engine accepted unknown function')
 
