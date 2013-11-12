@@ -42,7 +42,7 @@ def alltests():
     return unittest.TestSuite(suites)
 
 setup(name='zope.tales',
-      version='4.0.2',
+      version='4.0.3.dev0',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.org',
       description='Zope Template Application Language Expression Syntax '
