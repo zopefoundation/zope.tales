@@ -23,7 +23,8 @@ from setuptools import setup, find_packages
 
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
 
 def alltests():
@@ -48,9 +49,9 @@ setup(name='zope.tales',
       description='Zope Template Application Language Expression Syntax '
                   '(TALES)',
       long_description=(
-          read('README.txt')
+          read('README.rst')
           + '\n\n' +
-          read('CHANGES.txt')
+          read('CHANGES.rst')
       ),
       keywords="zope template xml tales",
       classifiers=[

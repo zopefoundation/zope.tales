@@ -1,38 +1,38 @@
-CHANGES
+Changes
 =======
 
 4.0.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for testing on Travis.
 
 
 4.0.2 (2013-11-12)
 ------------------
 
-- Added missing ``six`` dependency
+- Add missing ``six`` dependency
 
 
 4.0.1 (2013-02-22)
 ------------------
 
-- Fixed a previously untested Python 3.3 compatibility problem.
+- Fix a previously untested Python 3.3 compatibility problem.
 
 
 4.0.0 (2013-02-14)
 ------------------
 
-- Removed hard dependency on ``zope.tal``, which was already conditionalized
+- Remove hard dependency on ``zope.tal``, which was already conditionalized
   but required via ``setup.py``.
 
-- Added Python 3.3 and PyPY 1.9 support.
+- Add Python 3.3 and PyPY 1.9 support.
 
-- Replaced deprecated ``zope.interface.implements`` usage with equivalent
+- Replace deprecated ``zope.interface.implements`` usage with equivalent
   ``zope.interface.implementer`` decorator.
 
-- Dropped support for Python 2.4 and 2.5.
+- Drop support for Python 2.4 and 2.5.
 
-- Fixed documentation link in README.txt
+- Fix documentation link in README.txt
 
 
 3.5.2 (2012-05-23)
@@ -45,19 +45,19 @@ CHANGES
 3.5.1 (2010-04-30)
 ------------------
 
-- Removed use of 'zope.testing.doctestunit' in favor of stdlib's 'doctest.
+- Remove use of ``zope.testing.doctestunit`` in favor of stdlib's 'doctest.
 
 
 3.5.0 (2010-01-01)
 ------------------
 
-- Ported the lazy expression from Products.PageTemplates.
+- Port the lazy expression from ``Products.PageTemplates``.
 
 
 3.4.0 (2007-10-03)
 ------------------
 
-- Updated package setup.
+- Update package setup.
 
 - Initial release outside the Zope 3 trunk.
 
