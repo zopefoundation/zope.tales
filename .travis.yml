@@ -6,6 +6,8 @@ python:
     - 3.3
     - 3.4
     - pypy
+#   - pypy3
+#   pending release of a fix for https://bitbucket.org/pypy/pypy/issue/1946
 install:
     - pip install . --use-mirrors
 script:
