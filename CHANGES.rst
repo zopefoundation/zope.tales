@@ -4,7 +4,7 @@ Changes
 4.1.1 (unreleased)
 ------------------
 
-- TBD
+- Add support for Python 3.2 and PyPy3.
 
 
 4.1.0 (2014-12-29)

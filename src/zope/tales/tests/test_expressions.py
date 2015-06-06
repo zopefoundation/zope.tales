@@ -55,6 +55,7 @@ class ExpressionTestBase(unittest.TestCase):
 
     def setUp(self):
         # Test expression compilation
+        from six import u
         d = Data(
                  name = 'xander',
                  y = Data(
@@ -74,7 +75,7 @@ class ExpressionTestBase(unittest.TestCase):
               B = 2,
               adapterTest = at,
               dynamic = 'z',
-              eightBits = u'déjà vu'.encode('utf-8'),
+              eightBits = u('déjà vu').encode('utf-8'),
               ErrorGenerator = ErrorGenerator(),
               )
             )
@@ -163,28 +164,31 @@ class ExpressionTests(ExpressionTestBase):
 
     def testString8Bits(self):
         # Simple eight bit string interpolation should just work.
+        from six import u
         if PY3:
             # Py3: We simply do not handle 8-bit strings.
             return
         expr = self.engine.compile('string:a ${eightBits}')
         context=self.context
-        self.assertEqual(expr(context), 'a déjà vu')
+        self.assertEqual(expr(context), u('a déjà vu').encode('utf8'))
 
     def testStringUnicode(self):
         # Unicode string expressions should return unicode strings
-        expr = self.engine.compile(u'string:Fred')
+        from six import u
+        expr = self.engine.compile(u('string:Fred'))
         context=self.context
         result = expr(context)
-        self.assertEqual(result, u'Fred')
+        self.assertEqual(result, u('Fred'))
         self.assertTrue(isinstance(result, unicode))
 
     def testStringFailureWhenMixed(self):
         # Mixed Unicode and 8bit string interpolation fails with a
         # UnicodeDecodeError, assuming there is no default encoding
+        from six import u
         if PY3:
             # Py3: We simply do not handle 8-bit strings.
             return
-        expr = self.engine.compile(u'string:a ${eightBits}')
+        expr = self.engine.compile(u('string:a ${eightBits}'))
         self.assertRaises(UnicodeDecodeError, expr, self.context)
 
     def testPython(self):
