@@ -1,22 +1,24 @@
-Changes
-=======
+=========
+ Changes
+=========
 
 4.2.0 (unreleased)
-------------------
+==================
 
-- Add support for Python 3.5.
+- Add support for Python 3.5 and 3.6.
 
-- Drop support for Python 2.6 and 3.2.
+- Drop support for Python 2.6, 3.2 and 3.3.
 
+- Drop support for ``python setup.py test``.
 
 4.1.1 (2015-06-06)
-------------------
+==================
 
 - Add support for Python 3.2 and PyPy3.
 
 
 4.1.0 (2014-12-29)
-------------------
+==================
 
 .. note::
 
@@ -29,19 +31,19 @@ Changes
 
 
 4.0.2 (2013-11-12)
-------------------
+==================
 
 - Add missing ``six`` dependency
 
 
 4.0.1 (2013-02-22)
-------------------
+==================
 
 - Fix a previously untested Python 3.3 compatibility problem.
 
 
 4.0.0 (2013-02-14)
-------------------
+==================
 
 - Remove hard dependency on ``zope.tal``, which was already conditionalized
   but required via ``setup.py``.
@@ -57,26 +59,26 @@ Changes
 
 
 3.5.2 (2012-05-23)
-------------------
+==================
 
 - Subexpressions of a 'string:' expression can be only path expressions.
   https://bugs.launchpad.net/zope.tales/+bug/1002242
 
 
 3.5.1 (2010-04-30)
-------------------
+==================
 
 - Remove use of ``zope.testing.doctestunit`` in favor of stdlib's 'doctest.
 
 
 3.5.0 (2010-01-01)
-------------------
+==================
 
 - Port the lazy expression from ``Products.PageTemplates``.
 
 
 3.4.0 (2007-10-03)
-------------------
+==================
 
 - Update package setup.
 
@@ -84,7 +86,7 @@ Changes
 
 
 3.2.0 (2006-01-05)
-------------------
+==================
 
 - Corresponds to the verison of the zope.tales package shipped as part of
   the Zope 3.2.0 release.
@@ -93,7 +95,7 @@ Changes
 
 
 3.0.0 (2004-11-07)
-------------------
+==================
 
 - Corresponds to the verison of the zope.tales package shipped as part of
   the Zope X3.0.0 release.
