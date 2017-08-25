@@ -90,7 +90,6 @@ class SubPathExpr(object):
             compiledpath.append(tuple(currentpath))
 
         first = compiledpath[0]
-        base = first[0]
 
         if callable(first):
             # check for initial function
@@ -101,6 +100,7 @@ class SubPathExpr(object):
             raise engine.getCompilerError()(
                 'Dynamic name specified in first subpath element')
 
+        base = first[0]
         if base and not _valid_name(base):
             raise engine.getCompilerError()(
                 'Invalid variable name "%s"' % element)
@@ -211,9 +211,7 @@ class PathExpr(object):
         # __call__.
         if getattr(ob, '__call__', _marker) is not _marker:
             return ob()
-        if PY2 and isinstance(ob, types.ClassType):
-            return ob()
-        return ob
+        return ob() if PY2 and isinstance(ob, types.ClassType) else ob
 
     def __call__(self, econtext):
         if self._name == 'exists':
@@ -229,8 +227,8 @@ class PathExpr(object):
 
 
 _interp = re.compile(
-        r'\$(%(n)s)|\${(%(n)s(?:/[^}|]*)*(?:\|%(n)s(?:/[^}|]*)*)*)}'
-            % {'n': NAME_RE})
+    r'\$(%(n)s)|\${(%(n)s(?:/[^}|]*)*(?:\|%(n)s(?:/[^}|]*)*)*)}'
+    % {'n': NAME_RE})
 
 @implementer(ITALESExpression)
 class StringExpr(object):
@@ -318,9 +316,10 @@ class DeferExpr(object):
 class LazyWrapper(DeferWrapper):
     """Wrapper for lazy: expression
     """
+    _result = _marker
+
     def __init__(self, expr, econtext):
         DeferWrapper.__init__(self, expr, econtext)
-        self._result = _marker
 
     def __call__(self):
         r = self._result
