@@ -21,18 +21,21 @@ import re
 from zope.interface import implementer
 import six
 
+from zope.interface import Interface
+class ITALExpressionEngine(Interface):
+    pass
+class ITALExpressionCompiler(Interface):
+    pass
+class ITALExpressionErrorInfo(Interface):
+    pass
+
 try:
-    from zope.tal.interfaces import ITALExpressionEngine
-    from zope.tal.interfaces import ITALExpressionCompiler
-    from zope.tal.interfaces import ITALExpressionErrorInfo
+    # Override with real, if present
+    from zope.tal.interfaces import (ITALExpressionEngine,
+                                     ITALExpressionCompiler,
+                                     ITALExpressionErrorInfo)
 except ImportError:
-    from zope.interface import Interface
-    class ITALExpressionEngine(Interface):
-        pass
-    class ITALExpressionCompiler(Interface):
-        pass
-    class ITALExpressionErrorInfo(Interface):
-        pass
+    pass
 
 from zope.tales.interfaces import ITALESIterator
 
@@ -107,7 +110,7 @@ class Iterator(object):
         # but we can't know that without trying to get it. :(
         self._last = False
         try:
-            self._next = six.advance_iterator(i)
+            self._next = next(i)
         except StopIteration:
             self._done = True
         else:
@@ -159,7 +162,7 @@ class Iterator(object):
             return False
         self._item = v = self._next
         try:
-            self._next = six.advance_iterator(self._iter)
+            self._next = next(self._iter)
         except StopIteration:
             self._done = True
             self._last = True
@@ -175,6 +178,10 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> it.index()
+        Traceback (most recent call last):
+        ...
+        TypeError: No iteration position
         >>> int(bool(it.next()))
         1
         >>> it.index()
@@ -280,6 +287,10 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> it.letter()
+        Traceback (most recent call last):
+        ...
+        TypeError: No iteration position
         >>> it.next()
         True
         >>> it.letter()
@@ -300,7 +311,8 @@ class Iterator(object):
         while 1:
             index, off = divmod(index, radix)
             s = chr(base + off) + s
-            if not index: return s
+            if not index:
+                return s
 
     def Letter(self):
         """Get the iterator position as an upper-case letter
@@ -323,9 +335,9 @@ class Iterator(object):
         return self.letter(base=ord('A'))
 
     def Roman(self, rnvalues=(
-                    (1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),
-                    (100,'C'),(90,'XC'),(50,'L'),(40,'XL'),
-                    (10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')) ):
+            (1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'),
+            (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'),
+            (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I'))):
         """Get the iterator position as an upper-case roman numeral
 
         >>> context = Context(ExpressionEngine(), {})
@@ -431,6 +443,10 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
+        >>> it.item()
+        Traceback (most recent call last):
+        ...
+        TypeError: No iteration position
         >>> it.next()
         True
         >>> it.item()
@@ -495,13 +511,14 @@ class Iterator(object):
 class ErrorInfo(object):
     """Information about an exception passed to an on-error handler."""
 
+    value = None
+
     def __init__(self, err, position=(None, None)):
+        self.type = err
         if isinstance(err, Exception):
             self.type = err.__class__
             self.value = err
-        else:
-            self.type = err
-            self.value = None
+
         self.lineno = position[0]
         self.offset = position[1]
 
@@ -691,12 +708,15 @@ class Context(object):
         if isinstance(expression, str):
             expression = self._engine.compile(expression)
         __traceback_supplement__ = (
-           TALESTracebackSupplement, self, expression)
+            TALESTracebackSupplement, self, expression)
         return expression(self)
 
     evaluateValue = evaluate
 
     def evaluateBoolean(self, expr):
+        # "not not", while frowned upon by linters might be faster
+        # than bool() because it avoids a builtin lookup. Plus it can't be
+        # reassigned.
         return not not self.evaluate(expr)
 
     def evaluateText(self, expr):
@@ -708,13 +728,9 @@ class Context(object):
             return text
         return six.text_type(text)
 
-    def evaluateStructure(self, expr):
-        return self.evaluate(expr)
     evaluateStructure = evaluate
 
-    def evaluateMacro(self, expr):
-        # TODO: Should return None or a macro definition
-        return self.evaluate(expr)
+    # TODO: Should return None or a macro definition
     evaluateMacro = evaluate
 
     def createErrorInfo(self, err, position):
@@ -749,11 +765,10 @@ class TALESTracebackSupplement(object):
         import pprint
         data = self.context.contexts.copy()
         if 'modules' in data:
-            del data['modules']     # the list is really long and boring
+            del data['modules'] # the list is really long and boring
         s = pprint.pformat(data)
         if not as_html:
             return '   - Names:\n      %s' % s.replace('\n', '\n      ')
-        else:
-            from cgi import escape
-            return '<b>Names:</b><pre>%s</pre>' % (escape(s))
-        return None
+
+        from cgi import escape
+        return '<b>Names:</b><pre>%s</pre>' % (escape(s))
