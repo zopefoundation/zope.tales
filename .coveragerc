@@ -1,5 +1,7 @@
 [run]
 source = zope.tales
+omit =
+    */flycheck_*py
 
 [report]
 precision = 2

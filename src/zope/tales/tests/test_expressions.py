@@ -317,15 +317,17 @@ class TestParsedExpressions(ExpressionTestBase):
     def test_defer_expression_returns_wrapper(self):
         from zope.tales.expressions import DeferWrapper
         from zope.tales.expressions import DeferExpr
-        expr = self.engine.compile('defer: b')
+        expr = self.engine.compile('defer: B')
         self.assertIsInstance(expr, DeferExpr)
-        self.assertEqual(str(expr), "<DeferExpr 'b'>")
+        self.assertEqual(str(expr), "<DeferExpr 'B'>")
         self._check_evals_to_instance(expr, DeferWrapper)
 
         wrapper = expr(self.context)
-        self.assertEqual(wrapper(), self.context.vars['b'])
-
-        self.assertEqual(str(wrapper), 'boot')
+        # It evaluates to what its underlying expression evaluates to
+        self.assertEqual(wrapper(), self.context.vars['B'])
+        # The str() of defer is the same as the str() of evaluating it
+        self.assertEqual(str(wrapper), str(self.context.vars['B']))
+        self.assertEqual(str(wrapper()), str(self.context.vars['B']))
 
     def test_eval_defer_wrapper(self):
         expr = self.engine.compile('defer: b')
@@ -345,8 +347,12 @@ class TestParsedExpressions(ExpressionTestBase):
         second_result = lazy()
         self.assertIs(first_result, second_result)
 
-
     def test_not(self):
+        # self.context is a Data object, not a real
+        # zope.tales.tales.Context object, and as such
+        # it doesn't define the evaluateBoolean function that
+        # not expressions need. Add it locally to avoid disturbing
+        # other tests.
         def evaluateBoolean(expr):
             return bool(expr(self.context))
         self.context.evaluateBoolean = evaluateBoolean
