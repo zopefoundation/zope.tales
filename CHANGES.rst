@@ -11,6 +11,8 @@
 
 - Drop support for ``python setup.py test``.
 
+- Reach 100% test coverage and maintain it via tox.ini and Travis CI.
+
 4.1.1 (2015-06-06)
 ==================
 
