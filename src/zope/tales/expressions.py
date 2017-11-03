@@ -11,12 +11,21 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Basic Page Template expression types.
+"""
+Basic Page Template expression types.
+
+Expression objects are created by the :class:`.ExpressionEngine`
+(they must have previously been registered with
+:func:`~zope.tales.tales.ExpressionEngine.registerType`).  The expression object itself
+is a callable object taking one argument, *econtext*, which is the local
+expression namespace.
+
 """
 import re
-import six
 import sys
 import types
+
+import six
 
 from zope.interface import implementer
 from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
@@ -46,6 +55,9 @@ def simpleTraverse(object, path_items, econtext):
 
 
 class SubPathExpr(object):
+    """
+    Implementation of a single path expression.
+    """
 
     def __init__(self, path, traverser, engine):
         self._traverser = traverser
@@ -144,7 +156,10 @@ class SubPathExpr(object):
 
 @implementer(ITALESExpression)
 class PathExpr(object):
-    """One or more subpath expressions, separated by '|'."""
+    """
+    One or more :class:`subpath expressions <SubPathExpr>`, separated
+    by ``|``.
+    """
 
     # _default_type_names contains the expression type names this
     # class is usually registered for.
@@ -162,8 +177,8 @@ class PathExpr(object):
         paths = expr.split('|')
         self._subexprs = []
         add = self._subexprs.append
-        for i in range(len(paths)):
-            path = paths[i].lstrip()
+        for i, path in enumerate(paths):
+            path = path.lstrip()
             if _parse_expr(path):
                 # This part is the start of another expression type,
                 # so glue it back together and compile it.
@@ -232,6 +247,12 @@ _interp = re.compile(
 
 @implementer(ITALESExpression)
 class StringExpr(object):
+    """
+    An expression that produces a string.
+
+    Sub-sequences of the string that begin with ``$`` are
+    interpreted as path expressions to evaluate.
+    """
 
     def __init__(self, name, expr, engine):
         self._s = expr
@@ -275,6 +296,10 @@ class StringExpr(object):
 
 @implementer(ITALESExpression)
 class NotExpr(object):
+    """
+    An expression that negates the boolean value
+    of its sub-expression.
+    """
 
     def __init__(self, name, expr, engine):
         self._s = expr = expr.lstrip()
@@ -301,6 +326,19 @@ class DeferWrapper(object):
 
 @implementer(ITALESExpression)
 class DeferExpr(object):
+    """
+    An expression that will defer evaluation of the sub-expression
+    until necessary, preserving the execution context it was created
+    with.
+
+    This is useful in ``tal:define`` expressions::
+
+       <div tal:define="thing defer:some/path">
+         ...
+         <!-- some/path is only evaluated if condition is true -->
+         <span tal:condition="condition" tal:content="thing"/>
+       </div>
+    """
 
     def __init__(self, name, expr, compiler):
         self._s = expr = expr.lstrip()
@@ -328,7 +366,12 @@ class LazyWrapper(DeferWrapper):
         return r
 
 class LazyExpr(DeferExpr):
-    """lazy: expression handler for lazy initialization of expressions
+    """
+    An expression that will defer evaluation of its
+    sub-expression until the first time it is  necessary.
+
+    This is like :class:`DeferExpr`, but caches the result of
+    evaluating the expression.
     """
     def __call__(self, econtext):
         return LazyWrapper(self._c, econtext)

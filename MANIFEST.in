@@ -8,4 +8,9 @@ include .coveragerc
 
 recursive-include src *
 
+recursive-include docs *.rst
+recursive-include docs *.py
+recursive-include docs Makefile
+recursive-include docs make.bat
+
 global-exclude *.pyc

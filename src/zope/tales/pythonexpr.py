@@ -15,7 +15,16 @@
 """
 
 class PythonExpr(object):
+    """
+    Evaluates a python expression by calling :func:`eval` after
+    compiling it with :func:`compile`.
+    """
     def __init__(self, name, expr, engine):
+        """
+        :param str expr: The Python expression.
+        :param ExpressionEngine engine: The expression compiler that
+            is creating us.
+        """
         text = '\n'.join(expr.splitlines()) # normalize line endings
         text = '(' + text + ')' # Put text in parens so newlines don't matter
         self.text = text
