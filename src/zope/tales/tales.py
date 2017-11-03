@@ -19,9 +19,11 @@ __docformat__ = "reStructuredText"
 import re
 
 from zope.interface import implementer
+from zope.interface import Interface
 import six
 
-from zope.interface import Interface
+from zope.tales.interfaces import ITALESIterator
+
 class ITALExpressionEngine(Interface):
     pass
 class ITALExpressionCompiler(Interface):
@@ -37,7 +39,7 @@ try:
 except ImportError:
     pass
 
-from zope.tales.interfaces import ITALESIterator
+
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
 _parse_expr = re.compile(r"(%s):" % NAME_RE).match
@@ -61,7 +63,11 @@ _default = object()
 
 @implementer(ITALESIterator)
 class Iterator(object):
-    """TALES Iterator
+    """
+    TALES Iterator.
+
+    Default implementation of :class:`zope.tales.interfaces.ITALESIterator`.
+
     """
 
     def __init__(self, name, seq, context):
@@ -511,6 +517,7 @@ class Iterator(object):
 class ErrorInfo(object):
     """Information about an exception passed to an on-error handler."""
 
+    # XXX: This is a duplicate of zope.tal.taldefs.ErrorInfo
     value = None
 
     def __init__(self, err, position=(None, None)):
@@ -525,13 +532,23 @@ class ErrorInfo(object):
 
 @implementer(ITALExpressionCompiler)
 class ExpressionEngine(object):
-    '''Expression Engine
+    """
+    Expression compiler, an implementation of
+    :class:`zope.tal.interfaces.ITALExpressionCompiler`.
 
-    An instance of this class keeps a mutable collection of expression
-    type handlers.  It can compile expression strings by delegating to
-    these handlers.  It can provide an expression Context, which is
-    capable of holding state and evaluating compiled expressions.
-    '''
+    An instance of this class keeps :meth:`a mutable collection of
+    expression type handlers
+    <zope.tales.tales.ExpressionEngine.registerType>`.  It can compile
+    expression strings by delegating to these handlers.  It can
+    :meth:`provide an expression engine
+    <zope.tales.tales.ExpressionEngine.getContext>`, which is capable
+    of holding state and evaluating compiled expressions.
+
+    By default, this object does not know how to compile any
+    expression types.  See :data:`zope.tales.engine.Engine` and
+    :func:`zope.tales.engine.DefaultEngine` for pre-configured
+    instances supporting the standard expression types.
+    """
 
     def __init__(self):
         self.types = {}
@@ -540,23 +557,24 @@ class ExpressionEngine(object):
         self.iteratorFactory = Iterator
 
     def registerFunctionNamespace(self, namespacename, namespacecallable):
-        """Register a function namespace
+        """
+        Register a function namespace
 
-        namespace - a string containing the name of the namespace to
-                    be registered
+        :param str namespace: a string containing the name of the namespace to
+            be registered
 
-        namespacecallable - a callable object which takes the following
-                            parameter:
+        :param callable namespacecallable: a callable object which takes the following
+            parameter:
 
-                            context - the object on which the functions
-                                      provided by this namespace will
-                                      be called
+            :context: the object on which the functions
+                    provided by this namespace will
+                    be called
 
-                            This callable should return an object which
-                            can be traversed to get the functions provided
-                            by the this namespace.
+            This callable should return an object which
+            can be traversed to get the functions provided
+            by the this namespace.
 
-        example:
+        For example::
 
            class stringFuncs(object):
 
@@ -569,7 +587,7 @@ class ExpressionEngine(object):
               def lower(self):
                  return self.context.lower()
 
-            engine.registerFunctionNamespace('string',stringFuncs)
+            engine.registerFunctionNamespace('string', stringFuncs)
         """
         self.namespaces[namespacename] = namespacecallable
 
@@ -579,6 +597,12 @@ class ExpressionEngine(object):
         return self.namespaces[namespacename]
 
     def registerType(self, name, handler):
+        """
+        Register an expression of *name* to be handled with *handler*.
+
+        :raises RegistrationError: If this is a duplicate registration for *name*,
+            or if *name* is not a valid expression type name.
+        """
         if not _valid_name(name):
             raise RegistrationError('Invalid expression type name "%s".' % name)
         types = self.types
@@ -617,6 +641,16 @@ class ExpressionEngine(object):
         return handler(type, expr, self)
 
     def getContext(self, contexts=None, **kwcontexts):
+        """
+        Return a new expression engine.
+
+        The keyword arguments passed in *kwcantexts* become the default
+        variable context for the returned engine. If *contexts* is given, it
+        should be a mapping, and the values it contains will override
+        the keyword arguments.
+
+        :rtype: Context
+        """
         if contexts is not None:
             if kwcontexts:
                 kwcontexts.update(contexts)
@@ -630,15 +664,24 @@ class ExpressionEngine(object):
 
 @implementer(ITALExpressionEngine)
 class Context(object):
-    '''Expression Context
+    """
+    Expression engine, an implementation of
+    :class:`zope.tal.interfaces.ITALExpressionEngine`.
 
-    An instance of this class holds context information that it can
-    use to evaluate compiled expressions.
-    '''
+    This class is called ``Context`` because an instance of this class
+    holds context information (namespaces) that it uses when evaluating compiled
+    expressions.
+    """
     position = (None, None)
     source_file = None
 
     def __init__(self, engine, contexts):
+        """
+        :param engine: A :class:`ExpressionEngine` (a
+            :class:`zope.tal.interfaces.ITALExpressionCompiler`)
+        :param contexts: A mapping (namespace) of variables that forms the base
+            variable scope.
+        """
         self._engine = engine
         self.contexts = contexts
         self.setContext('nothing', None)
@@ -656,7 +699,7 @@ class Context(object):
         self._scope_stack = []
 
     def setContext(self, name, value):
-        # Hook to allow subclasses to do things like adding security proxies
+        """Hook to allow subclasses to do things like adding security proxies."""
         self.contexts[name] = value
 
     def beginScope(self):
@@ -705,6 +748,12 @@ class Context(object):
         return it
 
     def evaluate(self, expression):
+        """
+        Evaluate the *expression* by calling it, passing in this object,
+        and return the raw results.
+
+        If *expression* is a string, it is first compiled.
+        """
         if isinstance(expression, str):
             expression = self._engine.compile(expression)
         __traceback_supplement__ = (
@@ -714,6 +763,9 @@ class Context(object):
     evaluateValue = evaluate
 
     def evaluateBoolean(self, expr):
+        """
+        Evaluate the expression and return the boolean value of its result.
+        """
         # "not not", while frowned upon by linters might be faster
         # than bool() because it avoids a builtin lookup. Plus it can't be
         # reassigned.

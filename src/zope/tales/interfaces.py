@@ -11,7 +11,8 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Interface that describes the 'macros' attribute of a PageTemplate.
+"""
+Interface that describes the TALES implementation.
 """
 from zope.interface import Interface
 
@@ -36,25 +37,28 @@ class ITALESExpression(Interface):
     """TALES expression
 
     These are expression handlers that handle a specific type of
-    expression in TALES, e.g. path or string expression.
+    expression in TALES, e.g. ``path`` or ``string`` expression.
     """
 
     def __call__(econtext):
-        """Evaluate expression according to the given execution
-        context 'econtext' and return computed value.
+        """
+        Evaluate expression according to the given execution context
+        *econtext* and return computed value.
         """
 
 class ITALESIterator(ITALIterator):
-    """TAL Iterator provided by TALES
+    """TAL Iterator provided by TALES.
 
-    Values of this iterator are assigned to items in the repeat namespace.
+    Values of this iterator are assigned to items in the ``repeat``
+    namespace.
 
-    For example, with a TAL statement like: tal:repeat="item items",
-    an iterator will be assigned to "repeat/item".  The iterator
-    provides a number of handy methods useful in writing TAL loops.
+    For example, with a TAL statement like: ``tal:repeat="item
+    items"``, an iterator will be assigned to ``repeat/item`` (using a
+    path expression).  The iterator provides a number of handy methods
+    useful in writing TAL loops.
 
     The results are undefined of calling any of the methods except
-    'length' before the first iteration.
+    ``length`` before the first iteration.
     """
 
     def index():
@@ -66,7 +70,7 @@ class ITALESIterator(ITALIterator):
         """
 
     def even():
-        """Return whether the current position is even
+        """Return whether the current position is even.
         """
 
     def odd():
