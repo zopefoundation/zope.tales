@@ -28,7 +28,7 @@ independently). The two are integrated to produce page templates in
 `zope.pagetemplate <https://zopepagetemplate.readthedocs.io/>`_.
 
 The specification for TAL and TALES can be found at
-http://docs.zope.org/zope2/zope2book/AppendixC.html
+https://zope.readthedocs.io/en/latest/zope2book/AppendixC.html
 
 Documentation on this implementation and its API can be found at
 https://zopetales.readthedocs.io/
