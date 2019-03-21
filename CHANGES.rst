@@ -5,7 +5,8 @@
 4.4 (unreleased)
 ================
 
-- Nothing changed yet.
+- Fix test failures and deprecation warnings occurring when using Python 3.8a1.
+  (`#15 <https://github.com/zopefoundation/zope.tales/pull/15>`_)
 
 
 4.3 (2018-10-05)

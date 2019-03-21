@@ -18,6 +18,11 @@ An implementation of a TAL expression engine
 __docformat__ = "reStructuredText"
 import re
 
+try:
+    from html import escape
+except ImportError:
+    from cgi import escape
+
 from zope.interface import implementer
 from zope.interface import Interface
 import six
@@ -822,5 +827,4 @@ class TALESTracebackSupplement(object):
         if not as_html:
             return '   - Names:\n      %s' % s.replace('\n', '\n      ')
 
-        from cgi import escape
         return '<b>Names:</b><pre>%s</pre>' % (escape(s))
