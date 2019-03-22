@@ -2,8 +2,10 @@
  Changes
 =========
 
-4.4 (unreleased)
+5.0 (unreleased)
 ================
+
+- Drop support for Python 3.4.
 
 - Fix test failures and deprecation warnings occurring when using Python 3.8a1.
   (`#15 <https://github.com/zopefoundation/zope.tales/pull/15>`_)
