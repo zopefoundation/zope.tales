@@ -60,7 +60,7 @@ class OldStyleCallable: # NOT object
 
     pass
 
-class ExpressionTestBase(unittest.TestCase):
+class ExpressionTestBase(zope.tales.testing.TestCase):
 
     def setUp(self):
         # Test expression compilation
@@ -110,7 +110,7 @@ class ExpressionTestBase(unittest.TestCase):
 
     def _check_raises_compiler_error(self, expr_str, regex=None):
         from zope.tales.tales import CompilerError
-        meth = self.assertRaises if regex is None else self.assertRaisesRegexp
+        meth = self.assertRaises if regex is None else self.assertRaisesRegex
         args = (regex,) if regex is not None else ()
         with meth(CompilerError, *args) as exc:
             self.engine.compile(expr_str)
@@ -119,8 +119,7 @@ class ExpressionTestBase(unittest.TestCase):
     def _check_subexpr_raises_compiler_error(self, expr, regexp):
         from zope.tales.expressions import SubPathExpr
         from zope.tales.tales import CompilerError
-        with self.assertRaisesRegexp(CompilerError,
-                                     regexp):
+        with self.assertRaisesRegex(CompilerError, regexp):
             SubPathExpr(expr, None, self.engine)
 
 
@@ -178,8 +177,7 @@ class TestParsedExpressions(ExpressionTestBase):
 
     def test_dynamic_invalid_variable_name(self):
         from zope.tales.tales import CompilerError
-        with self.assertRaisesRegexp(CompilerError,
-                                     "Invalid variable name"):
+        with self.assertRaisesRegex(CompilerError, "Invalid variable name"):
             self.engine.compile('path:a/?123')
 
     def testOldStyleClassIsCalled(self):
@@ -476,8 +474,7 @@ class FunctionTests(ExpressionTestBase):
 
     def test_path_through_non_callable_nampspace(self):
         expr = self.engine.compile('adapterTest/not_callable_ns:nope')
-        with self.assertRaisesRegexp(ValueError,
-                                     'None'):
+        with self.assertRaisesRegex(ValueError, 'None'):
             expr(self.context)
 
 class TestSimpleModuleImporter(unittest.TestCase):
