@@ -123,7 +123,6 @@ class TALESTests(unittest.TestCase):
         self.assertEqual(ei.type, Exception)
         self.assertEqual(ei.value, e)
 
-
     def testVariables(self):
         # Test variables
         ctxt = self.getContext()

@@ -14,17 +14,17 @@
 ##############################################################################
 """Default TALES expression implementations tests.
 """
-import sys
+import six
 import unittest
 
 from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.tales.tales import Undefined
 from zope.interface import implementer
+import zope.tales.testing
 
 text_type = str if str is not bytes else unicode
 
-PY3 = sys.version_info[0] == 3
 
 class Data(object):
 
@@ -93,7 +93,6 @@ class ExpressionTestBase(zope.tales.testing.TestCase):
         self.engine = Engine
 
         self.py3BrokenEightBits = "a b'd\\xc3\\xa9j\\xc3\\xa0 vu'"
-
 
     def _compiled_expr(self, expr):
         return self.engine.compile(expr) if isinstance(expr, str) else expr
@@ -221,7 +220,7 @@ class TestParsedExpressions(ExpressionTestBase):
         # Simple eight bit string interpolation should just work.
         # Except on Py3, where we really mess it up.
         expr = self.engine.compile('string:a ${eightBits}')
-        expected = 'a ' + self.context.vars['eightBits'] if not PY3 else self.py3BrokenEightBits
+        expected = 'a ' + self.context.vars['eightBits'] if not six.PY3 else self.py3BrokenEightBits
         self._check_evals_to(expr, expected)
 
     def testStringUnicode(self):
@@ -240,7 +239,7 @@ class TestParsedExpressions(ExpressionTestBase):
             result = expr(self.context)
             # If we get here, we're on Python 3, which handles this
             # poorly.
-            self.assertTrue(PY3)
+            self.assertTrue(six.PY3)
             self.assertEqual(result, self.py3BrokenEightBits)
             self.context.vars['eightBits'].decode('ascii') # raise UnicodeDecodeError
 
