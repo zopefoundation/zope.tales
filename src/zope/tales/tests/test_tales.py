@@ -21,7 +21,7 @@ import six
 from zope.tales import tales
 from zope.tales.tests.simpleexpr import SimpleExpr
 from zope.testing import renormalizing
-import zope.tales.testing
+import zope.tales.tests
 
 
 class TestIterator(unittest.TestCase):
@@ -150,7 +150,7 @@ class TALESTests(unittest.TestCase):
 
         ctxt.endScope()
 
-class TestExpressionEngine(zope.tales.testing.TestCase):
+class TestExpressionEngine(zope.tales.tests.TestCase):
 
     def setUp(self):
         self.engine = tales.ExpressionEngine()

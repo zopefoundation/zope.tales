@@ -21,7 +21,7 @@ from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.tales.tales import Undefined
 from zope.interface import implementer
-import zope.tales.testing
+import zope.tales.tests
 
 text_type = str if str is not bytes else unicode
 
@@ -60,7 +60,7 @@ class OldStyleCallable: # NOT object
 
     pass
 
-class ExpressionTestBase(zope.tales.testing.TestCase):
+class ExpressionTestBase(zope.tales.tests.TestCase):
 
     def setUp(self):
         # Test expression compilation
