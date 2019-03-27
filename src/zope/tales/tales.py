@@ -20,8 +20,7 @@ import re
 
 try:
     from html import escape
-except ImportError:  # pragma: no cover
-    # PY2
+except ImportError:  # pragma: PY2
     from cgi import escape
 
 from zope.interface import implementer
