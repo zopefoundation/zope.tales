@@ -13,7 +13,7 @@
 ##############################################################################
 """ Tests for zope.tales.expressions.simpleTraverse
 """
-from unittest import TestCase, TestSuite, makeSuite, main
+from unittest import TestCase
 from zope.tales.expressions import simpleTraverse
 
 
@@ -21,12 +21,15 @@ class AttrTraversable(object):
     """Traversable by attribute access"""
     attr = 'foo'
 
+
 class ItemTraversable(object):
     """Traversable by item access"""
+
     def __getitem__(self, name):
         if name == 'attr':
             return 'foo'
         raise KeyError(name)
+
 
 class AllTraversable(AttrTraversable, ItemTraversable):
     """Traversable by attribute and item access"""
@@ -34,6 +37,7 @@ class AllTraversable(AttrTraversable, ItemTraversable):
 
 
 _marker = object()
+
 
 def getitem(ob, name, default=_marker):
     """Helper a la getattr(ob, name, default)."""
@@ -82,7 +86,7 @@ class TraverserTests(TestCase):
         self.assertRaises(KeyError, getitem, ob, 'missing_attr')
 
     def testTraverseEmptyPath(self):
-        # simpleTraverse should return the original object if the path is emtpy
+        # simpleTraverse should return the original object if the path is empty
         ob = object()
         self.assertEqual(simpleTraverse(ob, [], None), ob)
 
@@ -95,7 +99,8 @@ class TraverserTests(TestCase):
         # simpleTraverse should raise AttributeError
         ob = AttrTraversable()
         # Here lurks the bug (unexpected NamError raised)
-        self.assertRaises(AttributeError, simpleTraverse, ob, ['missing_attr'], None)
+        self.assertRaises(
+            AttributeError, simpleTraverse, ob, ['missing_attr'], None)
 
     def testTraverseByItem(self):
         # simpleTraverse should find attr through item access
@@ -113,17 +118,7 @@ class TraverserTests(TestCase):
         self.assertEqual(simpleTraverse(ob, ['attr'], None), 'foo')
 
     def testTraverseByMissingAll(self):
-        # simpleTraverse should raise KeyError (because ob implements __getitem__)
+        # simpleTraverse should raise KeyError (because ob implements
+        # __getitem__)
         ob = AllTraversable()
         self.assertRaises(KeyError, simpleTraverse, ob, ['missing_attr'], None)
-
-
-def test_suite():
-    return TestSuite((
-        makeSuite(TraverserTests),
-    ))
-
-
-if __name__ == '__main__':
-    main(defaultTest='test_suite')
-

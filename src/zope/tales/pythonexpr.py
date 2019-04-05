@@ -14,6 +14,7 @@
 """Generic Python Expression Handler
 """
 
+
 class PythonExpr(object):
     """
     Evaluates a python expression by calling :func:`eval` after
@@ -25,8 +26,8 @@ class PythonExpr(object):
         :param ExpressionEngine engine: The expression compiler that
             is creating us.
         """
-        text = '\n'.join(expr.splitlines()) # normalize line endings
-        text = '(' + text + ')' # Put text in parens so newlines don't matter
+        text = '\n'.join(expr.splitlines())  # normalize line endings
+        text = '(' + text + ')'  # Put text in parens so newlines don't matter
         self.text = text
         try:
             code = self._compile(text, '<string>')

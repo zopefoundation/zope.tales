@@ -16,6 +16,7 @@
 from doctest import DocTestSuite
 import unittest
 import re
+import sys
 
 import six
 from zope.tales import tales
@@ -51,6 +52,7 @@ class TestIterator(unittest.TestCase):
             self.assertTrue(next(it), "Multi-element iterator")
         self.assertTrue(not next(it), "Multi-element iterator")
         context._complete_()
+
 
 class TALESTests(unittest.TestCase):
 
@@ -150,6 +152,7 @@ class TALESTests(unittest.TestCase):
 
         ctxt.endScope()
 
+
 class TestExpressionEngine(zope.tales.tests.TestCase):
 
     def setUp(self):
@@ -182,6 +185,7 @@ class TestExpressionEngine(zope.tales.tests.TestCase):
         self.assertEqual(ctx.contexts['a'], 1)
         self.assertEqual(ctx.contexts['b'], 2)
         self.assertEqual(ctx.contexts['c'], 1)
+
 
 class TestContext(unittest.TestCase):
 
@@ -249,7 +253,6 @@ class TestContext(unittest.TestCase):
         self.assertEqual(u'text', self.context.evaluateText("it"))
 
     def test_traceback_supplement(self):
-        import sys
         def raises(self):
             raise Exception()
 
@@ -305,6 +308,7 @@ class Harness(object):
     def __getattr__(self, name):
         return HarnessMethod(self, name)
 
+
 class HarnessMethod(object):
 
     def __init__(self, harness, name):
@@ -333,11 +337,10 @@ class HarnessMethod(object):
 
 
 def test_suite():
-    checker = renormalizing.RENormalizing(
-        [(re.compile(r"object of type 'MyIter' has no len\(\)"),
-          r"len() of unsized object"),
-        ]
-    )
+    checker = renormalizing.RENormalizing([
+        (re.compile(r"object of type 'MyIter' has no len\(\)"),
+         r"len() of unsized object"),
+    ])
     suite = unittest.defaultTestLoader.loadTestsFromName(__name__)
     suite.addTest(DocTestSuite("zope.tales.tales",
                                checker=checker))
