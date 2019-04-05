@@ -14,17 +14,17 @@
 ##############################################################################
 """Default TALES expression implementations tests.
 """
-import sys
+import six
 import unittest
 
 from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.tales.tales import Undefined
 from zope.interface import implementer
+import zope.tales.tests
 
 text_type = str if str is not bytes else unicode
 
-PY3 = sys.version_info[0] == 3
 
 class Data(object):
 
@@ -60,7 +60,7 @@ class OldStyleCallable: # NOT object
 
     pass
 
-class ExpressionTestBase(unittest.TestCase):
+class ExpressionTestBase(zope.tales.tests.TestCase):
 
     def setUp(self):
         # Test expression compilation
@@ -94,7 +94,6 @@ class ExpressionTestBase(unittest.TestCase):
 
         self.py3BrokenEightBits = "a b'd\\xc3\\xa9j\\xc3\\xa0 vu'"
 
-
     def _compiled_expr(self, expr):
         return self.engine.compile(expr) if isinstance(expr, str) else expr
 
@@ -110,7 +109,7 @@ class ExpressionTestBase(unittest.TestCase):
 
     def _check_raises_compiler_error(self, expr_str, regex=None):
         from zope.tales.tales import CompilerError
-        meth = self.assertRaises if regex is None else self.assertRaisesRegexp
+        meth = self.assertRaises if regex is None else self.assertRaisesRegex
         args = (regex,) if regex is not None else ()
         with meth(CompilerError, *args) as exc:
             self.engine.compile(expr_str)
@@ -119,8 +118,7 @@ class ExpressionTestBase(unittest.TestCase):
     def _check_subexpr_raises_compiler_error(self, expr, regexp):
         from zope.tales.expressions import SubPathExpr
         from zope.tales.tales import CompilerError
-        with self.assertRaisesRegexp(CompilerError,
-                                     regexp):
+        with self.assertRaisesRegex(CompilerError, regexp):
             SubPathExpr(expr, None, self.engine)
 
 
@@ -178,8 +176,7 @@ class TestParsedExpressions(ExpressionTestBase):
 
     def test_dynamic_invalid_variable_name(self):
         from zope.tales.tales import CompilerError
-        with self.assertRaisesRegexp(CompilerError,
-                                     "Invalid variable name"):
+        with self.assertRaisesRegex(CompilerError, "Invalid variable name"):
             self.engine.compile('path:a/?123')
 
     def testOldStyleClassIsCalled(self):
@@ -223,7 +220,7 @@ class TestParsedExpressions(ExpressionTestBase):
         # Simple eight bit string interpolation should just work.
         # Except on Py3, where we really mess it up.
         expr = self.engine.compile('string:a ${eightBits}')
-        expected = 'a ' + self.context.vars['eightBits'] if not PY3 else self.py3BrokenEightBits
+        expected = 'a ' + self.context.vars['eightBits'] if not six.PY3 else self.py3BrokenEightBits
         self._check_evals_to(expr, expected)
 
     def testStringUnicode(self):
@@ -242,7 +239,7 @@ class TestParsedExpressions(ExpressionTestBase):
             result = expr(self.context)
             # If we get here, we're on Python 3, which handles this
             # poorly.
-            self.assertTrue(PY3)
+            self.assertTrue(six.PY3)
             self.assertEqual(result, self.py3BrokenEightBits)
             self.context.vars['eightBits'].decode('ascii') # raise UnicodeDecodeError
 
@@ -476,8 +473,7 @@ class FunctionTests(ExpressionTestBase):
 
     def test_path_through_non_callable_nampspace(self):
         expr = self.engine.compile('adapterTest/not_callable_ns:nope')
-        with self.assertRaisesRegexp(ValueError,
-                                     'None'):
+        with self.assertRaisesRegex(ValueError, 'None'):
             expr(self.context)
 
 class TestSimpleModuleImporter(unittest.TestCase):

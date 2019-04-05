@@ -21,6 +21,7 @@ import six
 from zope.tales import tales
 from zope.tales.tests.simpleexpr import SimpleExpr
 from zope.testing import renormalizing
+import zope.tales.tests
 
 
 class TestIterator(unittest.TestCase):
@@ -122,7 +123,6 @@ class TALESTests(unittest.TestCase):
         self.assertEqual(ei.type, Exception)
         self.assertEqual(ei.value, e)
 
-
     def testVariables(self):
         # Test variables
         ctxt = self.getContext()
@@ -150,20 +150,20 @@ class TALESTests(unittest.TestCase):
 
         ctxt.endScope()
 
-class TestExpressionEngine(unittest.TestCase):
+class TestExpressionEngine(zope.tales.tests.TestCase):
 
     def setUp(self):
         self.engine = tales.ExpressionEngine()
 
     def test_register_invalid_name(self):
-        with self.assertRaisesRegexp(tales.RegistrationError,
-                                     "Invalid base name"):
+        with self.assertRaisesRegex(tales.RegistrationError,
+                                    "Invalid base name"):
             self.engine.registerBaseName('123', None)
 
     def test_register_duplicate_name(self):
         self.engine.registerBaseName('abc', 123)
-        with self.assertRaisesRegexp(tales.RegistrationError,
-                                     "Multiple registrations"):
+        with self.assertRaisesRegex(tales.RegistrationError,
+                                    "Multiple registrations"):
             self.engine.registerBaseName('abc', None)
 
         self.assertEqual({'abc': 123}, self.engine.getBaseNames())

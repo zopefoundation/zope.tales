@@ -32,7 +32,7 @@ TESTS_REQUIRE = [
 ]
 
 setup(name='zope.tales',
-      version='4.4.dev0',
+      version='5.0.dev0',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.org',
       description='Zope Template Application Language Expression Syntax '
@@ -52,7 +52,6 @@ setup(name='zope.tales',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
@@ -68,6 +67,7 @@ setup(name='zope.tales',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope'],
+      python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*',
       extras_require={
           'test': TESTS_REQUIRE,
           'tal': [
