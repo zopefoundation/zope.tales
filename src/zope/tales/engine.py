@@ -24,6 +24,7 @@ from zope.tales.expressions import LazyExpr
 from zope.tales.expressions import SimpleModuleImporter
 from zope.tales.pythonexpr import PythonExpr
 
+
 def DefaultEngine():
     """
     Create and return an instance of :class:`~.ExpressionEngine` (an
@@ -44,8 +45,9 @@ def DefaultEngine():
     ``modules``
         :class:`.SimpleModuleImporter`
 
-    In addition, the default ``path`` expressions (``standard``, ``path``, ``exists``
-    and ``nocall``), all implemented by :class:`.PathExpr`, are registered.
+    In addition, the default ``path`` expressions (``standard``, ``path``,
+    ``exists`` and ``nocall``), all implemented by :class:`.PathExpr`, are
+    registered.
     """
     e = ExpressionEngine()
     reg = e.registerType
@@ -58,5 +60,6 @@ def DefaultEngine():
     reg('lazy', LazyExpr)
     e.registerBaseName('modules', SimpleModuleImporter())
     return e
+
 
 Engine = DefaultEngine()

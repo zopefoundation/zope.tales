@@ -16,9 +16,9 @@ Basic Page Template expression types.
 
 Expression objects are created by the :class:`.ExpressionEngine`
 (they must have previously been registered with
-:func:`~zope.tales.tales.ExpressionEngine.registerType`).  The expression object itself
-is a callable object taking one argument, *econtext*, which is the local
-expression namespace.
+:func:`~zope.tales.tales.ExpressionEngine.registerType`).  The expression
+object itself is a callable object taking one argument, *econtext*, which is
+the local expression namespace.
 
 """
 import re
@@ -37,6 +37,7 @@ _marker = object()
 namespace_re = re.compile(r'(\w+):(.+)')
 
 PY2 = sys.version_info[0] == 2
+
 
 def simpleTraverse(object, path_items, econtext):
     """Traverses a sequence of names, first trying attributes then items.
@@ -168,7 +169,7 @@ class PathExpr(object):
         'path',
         'exists',
         'nocall',
-        )
+    )
 
     def __init__(self, name, expr, engine, traverser=simpleTraverse):
         self._s = expr
@@ -240,10 +241,10 @@ class PathExpr(object):
         return '<PathExpr %s:%s>' % (self._name, repr(self._s))
 
 
-
 _interp = re.compile(
     r'\$(%(n)s)|\${(%(n)s(?:/[^}|]*)*(?:\|%(n)s(?:/[^}|]*)*)*)}'
     % {'n': NAME_RE})
+
 
 @implementer(ITALESExpression)
 class StringExpr(object):
@@ -264,7 +265,8 @@ class StringExpr(object):
             path_type = engine.getTypes()['path']
             parts = []
             for exp in expr.split('$$'):
-                if parts: parts.append('$')
+                if parts:
+                    parts.append('$')
                 m = _interp.search(exp)
                 while m is not None:
                     parts.append(exp[:m.start()])
@@ -364,6 +366,7 @@ class LazyWrapper(DeferWrapper):
         if r is _marker:
             self._result = r = self._expr(self._econtext)
         return r
+
 
 class LazyExpr(DeferExpr):
     """

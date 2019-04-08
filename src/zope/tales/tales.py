@@ -15,7 +15,6 @@
 
 An implementation of a TAL expression engine
 """
-__docformat__ = "reStructuredText"
 import re
 
 try:
@@ -29,21 +28,26 @@ import six
 
 from zope.tales.interfaces import ITALESIterator
 
+
 class ITALExpressionEngine(Interface):
     pass
+
+
 class ITALExpressionCompiler(Interface):
     pass
+
+
 class ITALExpressionErrorInfo(Interface):
     pass
 
+
 try:
     # Override with real, if present
-    from zope.tal.interfaces import (ITALExpressionEngine,
+    from zope.tal.interfaces import (ITALExpressionEngine,  # noqa: F811
                                      ITALExpressionCompiler,
                                      ITALExpressionErrorInfo)
 except ImportError:
     pass
-
 
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
@@ -54,17 +58,21 @@ _valid_name = re.compile('%s$' % NAME_RE).match
 class TALESError(Exception):
     """Error during TALES evaluation"""
 
+
 class Undefined(TALESError):
-    '''Exception raised on traversal of an undefined path'''
+    """Exception raised on traversal of an undefined path."""
+
 
 class CompilerError(Exception):
-    '''TALES Compiler Error'''
+    """TALES Compiler Error"""
+
 
 class RegistrationError(Exception):
-    '''Expression type or base name registration Error'''
+    """Expression type or base name registration Error."""
 
 
 _default = object()
+
 
 @implementer(ITALESIterator)
 class Iterator(object):
@@ -568,8 +576,8 @@ class ExpressionEngine(object):
         :param str namespace: a string containing the name of the namespace to
             be registered
 
-        :param callable namespacecallable: a callable object which takes the following
-            parameter:
+        :param callable namespacecallable: a callable object which takes the
+            following parameter:
 
             :context: the object on which the functions
                     provided by this namespace will
@@ -596,7 +604,6 @@ class ExpressionEngine(object):
         """
         self.namespaces[namespacename] = namespacecallable
 
-
     def getFunctionNamespace(self, namespacename):
         """ Returns the function namespace """
         return self.namespaces[namespacename]
@@ -605,11 +612,12 @@ class ExpressionEngine(object):
         """
         Register an expression of *name* to be handled with *handler*.
 
-        :raises RegistrationError: If this is a duplicate registration for *name*,
-            or if *name* is not a valid expression type name.
+        :raises RegistrationError: If this is a duplicate registration for
+            *name*, or if *name* is not a valid expression type name.
         """
         if not _valid_name(name):
-            raise RegistrationError('Invalid expression type name "%s".' % name)
+            raise RegistrationError(
+                'Invalid expression type name "%s".' % name)
         types = self.types
         if name in types:
             raise RegistrationError(
@@ -674,8 +682,8 @@ class Context(object):
     :class:`zope.tal.interfaces.ITALExpressionEngine`.
 
     This class is called ``Context`` because an instance of this class
-    holds context information (namespaces) that it uses when evaluating compiled
-    expressions.
+    holds context information (namespaces) that it uses when evaluating
+    compiled expressions.
     """
     position = (None, None)
     source_file = None
@@ -695,7 +703,7 @@ class Context(object):
         self.repeat_vars = rv = {}
         # Wrap this, as it is visible to restricted code
         self.setContext('repeat', rv)
-        self.setContext('loop', rv) # alias
+        self.setContext('loop', rv)  # alias
 
         self.vars = vars = contexts.copy()
         self._vars_stack = [vars]
@@ -704,7 +712,8 @@ class Context(object):
         self._scope_stack = []
 
     def setContext(self, name, value):
-        """Hook to allow subclasses to do things like adding security proxies."""
+        """Hook to allow subclasses to do things like adding security proxies.
+        """
         self.contexts[name] = value
 
     def beginScope(self):
@@ -822,7 +831,7 @@ class TALESTracebackSupplement(object):
         import pprint
         data = self.context.contexts.copy()
         if 'modules' in data:
-            del data['modules'] # the list is really long and boring
+            del data['modules']  # the list is really long and boring
         s = pprint.pformat(data)
         if not as_html:
             return '   - Names:\n      %s' % s.replace('\n', '\n      ')

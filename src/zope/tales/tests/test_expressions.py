@@ -32,14 +32,15 @@ class Data(object):
         self.__dict__.update(kw)
 
     def __getattr__(self, name):
-        # Let linters (like pylint) know this is a dynamic class and they shouldn't
-        # emit "Data has no attribute" errors
+        # Let linters (like pylint) know this is a dynamic class and they
+        # shouldn't emit "Data has no attribute" errors
         return object.__getattribute__(self, name)
 
     def __repr__(self):
         return self.name
 
     __str__ = __repr__
+
 
 class ErrorGenerator(object):
 
@@ -51,14 +52,16 @@ class ErrorGenerator(object):
             e = getattr(builtins, name, None) or SystemError
         raise e('mess')
 
+
 class Callable(object):
 
     def __call__(self):
         return 42
 
-class OldStyleCallable: # NOT object
 
+class OldStyleCallable:  # NOT object
     pass
+
 
 class ExpressionTestBase(zope.tales.tests.TestCase):
 
@@ -199,6 +202,10 @@ class TestParsedExpressions(ExpressionTestBase):
         expr = self.engine.compile('string:A$B')
         self._check_evals_to(expr, 'A2')
 
+    def testString_w_dollar_sign(self):
+        expr = self.engine.compile('string:A$$$B')
+        self._check_evals_to(expr, 'A$2')
+
     def testStringSub_w_python(self):
         CompilerError = self.engine.getCompilerError()
         self.assertRaises(CompilerError,
@@ -220,7 +227,8 @@ class TestParsedExpressions(ExpressionTestBase):
         # Simple eight bit string interpolation should just work.
         # Except on Py3, where we really mess it up.
         expr = self.engine.compile('string:a ${eightBits}')
-        expected = 'a ' + self.context.vars['eightBits'] if not six.PY3 else self.py3BrokenEightBits
+        expected = ('a ' + self.context.vars['eightBits']
+                    if not six.PY3 else self.py3BrokenEightBits)
         self._check_evals_to(expr, expected)
 
     def testStringUnicode(self):
@@ -241,7 +249,8 @@ class TestParsedExpressions(ExpressionTestBase):
             # poorly.
             self.assertTrue(six.PY3)
             self.assertEqual(result, self.py3BrokenEightBits)
-            self.context.vars['eightBits'].decode('ascii') # raise UnicodeDecodeError
+            # raise UnicodeDecodeError
+            self.context.vars['eightBits'].decode('ascii')
 
     def test_string_escape_percent(self):
         self._check_evals_to('string:%', '%')
@@ -283,6 +292,7 @@ class TestParsedExpressions(ExpressionTestBase):
 
     def testEmptyPathSegmentRaisesCompilerError(self):
         CompilerError = self.engine.getCompilerError()
+
         def check(expr):
             self.assertRaises(CompilerError, self.engine.compile, expr)
 
@@ -394,7 +404,7 @@ class FunctionTests(ExpressionTestBase):
         self.engine.registerFunctionNamespace('namespace', self.TestNameSpace)
         self.engine.registerFunctionNamespace('not_callable_ns', None)
 
-    ## framework-ish tests
+    # framework-ish tests
 
     def testSetEngine(self):
         expr = self.engine.compile('adapterTest/namespace:engine')
@@ -411,7 +421,7 @@ class FunctionTests(ExpressionTestBase):
                           self.engine.getFunctionNamespace,
                           'badnamespace')
 
-    ## compile time tests
+    # compile time tests
 
     def testBadNamespace(self):
         # namespace doesn't exist
@@ -457,14 +467,15 @@ class FunctionTests(ExpressionTestBase):
         e = exc.exception
         self.assertEqual(e.args[0], 'title')
 
-    ## runtime tests
+    # runtime tests
 
     def testNormalFunction(self):
         expr = self.engine.compile('adapterTest/namespace:upper')
         self.assertEqual(expr(self.context), 'YIKES')
 
     def testFunctionOnFunction(self):
-        expr = self.engine.compile('adapterTest/namespace:jump/namespace:upper')
+        expr = self.engine.compile(
+            'adapterTest/namespace:jump/namespace:upper')
         self.assertEqual(expr(self.context), 'XANDER')
 
     def testPathOnFunction(self):
@@ -475,6 +486,7 @@ class FunctionTests(ExpressionTestBase):
         expr = self.engine.compile('adapterTest/not_callable_ns:nope')
         with self.assertRaisesRegex(ValueError, 'None'):
             expr(self.context)
+
 
 class TestSimpleModuleImporter(unittest.TestCase):
 
@@ -492,7 +504,6 @@ class TestSimpleModuleImporter(unittest.TestCase):
     def test_no_such_toplevel_possible(self):
         with self.assertRaises(ImportError):
             self._makeOne()['this cannot exist']
-
 
     def test_no_such_submodule_not_package(self):
         with self.assertRaises(ImportError):

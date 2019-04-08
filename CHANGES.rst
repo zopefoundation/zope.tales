@@ -10,6 +10,8 @@
 - Fix test failures and deprecation warnings occurring when using Python 3.8a1.
   (`#15 <https://github.com/zopefoundation/zope.tales/pull/15>`_)
 
+- Flake8 the code.
+
 
 4.3 (2018-10-05)
 ================

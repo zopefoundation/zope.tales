@@ -11,6 +11,10 @@ matrix:
           dist: xenial
         - python: "3.8-dev"
           dist: xenial
+        - name: "flake8"
+          install: pip install flake8
+          script: flake8 src setup.py
+          after_success:
 install:
     - pip install -U pip setuptools
     - pip install -U coverage coverage-python-version coveralls
