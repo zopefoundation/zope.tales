@@ -202,6 +202,10 @@ class TestParsedExpressions(ExpressionTestBase):
         expr = self.engine.compile('string:A$B')
         self._check_evals_to(expr, 'A2')
 
+    def testString_w_dollar_sign(self):
+        expr = self.engine.compile('string:A$$$B')
+        self._check_evals_to(expr, 'A$2')
+
     def testStringSub_w_python(self):
         CompilerError = self.engine.getCompilerError()
         self.assertRaises(CompilerError,
