@@ -36,7 +36,7 @@ class TestPythonExpr(unittest.TestCase):
         expr = PythonExpr(None, '[f for f in foo if exists(f)]', None)
         if six.PY2:
             self.assertEqual(
-                expr._varnames, ('foo', 'f', 'exists')) # pragma: no cover
+                expr._varnames, ('foo', 'f', 'exists'))  # pragma: no cover
         else:
             self.assertEqual(expr._varnames, ('foo', 'exists'))
 

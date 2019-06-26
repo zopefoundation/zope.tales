@@ -23,7 +23,7 @@ from zope.tales.tales import Undefined
 from zope.interface import implementer
 import zope.tales.tests
 
-text_type = str if str is not bytes else unicode
+text_type = str if str is not bytes else unicode  # noqa
 
 
 class Data(object):
