@@ -2,10 +2,11 @@
  Changes
 =========
 
-5.1 (unreleased)
-================
+5.0.1 (unreleased)
+==================
 
-- Nothing changed yet.
+- Fix problem with list comprehensions not working in Python 3. This was due
+  to the code not detecting variables used in side those expressions properly.
 
 
 5.0 (2019-04-08)

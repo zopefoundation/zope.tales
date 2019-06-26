@@ -13,6 +13,7 @@
 ##############################################################################
 """Generic Python Expression Handler
 """
+import types
 
 
 class PythonExpr(object):
@@ -35,6 +36,11 @@ class PythonExpr(object):
             raise engine.getCompilerError()(str(e))
         self._code = code
         self._varnames = code.co_names
+        # In Python 3, variables used inside list comprehensions are not
+        # directly available via co_names.
+        for const in code.co_consts:
+            if isinstance(const, types.CodeType):
+                self._varnames += const.co_names
 
     def _compile(self, text, filename):
         return compile(text, filename, 'eval')

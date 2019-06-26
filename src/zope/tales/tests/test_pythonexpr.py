@@ -12,6 +12,7 @@
 #
 ##############################################################################
 
+import six
 import unittest
 
 from zope.tales.engine import Engine
@@ -26,6 +27,18 @@ class TestPythonExpr(unittest.TestCase):
     def setUp(self):
         self.context = Context(Engine, {})
         self.engine = Engine
+
+    def test_init(self):
+        expr = PythonExpr(None, 'a', None)
+        self.assertEqual(expr._varnames, ('a',))
+
+    def test_init_listcomp(self):
+        expr = PythonExpr(None, '[f for f in foo if exists(f)]', None)
+        if six.PY2:
+            self.assertEqual(
+                expr._varnames, ('foo', 'f', 'exists')) # pragma: no cover
+        else:
+            self.assertEqual(expr._varnames, ('foo', 'exists'))
 
     def test_repr_str(self):
         expr = PythonExpr(None, 'a', None)
@@ -49,3 +62,14 @@ class TestPythonExpr(unittest.TestCase):
         self.assertIsInstance(string, ExprTypeProxy)
 
         self.assertEqual(expr(self.context), "abc")
+
+    def test_call(self):
+        expr = PythonExpr(None, 'x == 1', None)
+        self.context.setLocal('x', 1)
+        self.assertTrue(expr(self.context))
+
+    def test_call_listcomp(self):
+        expr = PythonExpr(None, '[fmt(x) for x in foo if fmt(x)]', None)
+        self.context.setLocal('foo', [0, 1, 2])
+        self.context.setLocal('fmt', bool)
+        self.assertEqual(expr(self.context), [True, True])
