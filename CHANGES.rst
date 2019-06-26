@@ -2,7 +2,7 @@
  Changes
 =========
 
-5.0.1 (unreleased)
+5.0.1 (2019-06-26)
 ==================
 
 - Fix problem with list comprehensions not working in Python 3. This was due
