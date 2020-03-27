@@ -5,7 +5,9 @@
 5.0.2 (unreleased)
 ==================
 
-- Nothing changed yet.
+- ``tales.Context.getValue`` now returns the innermost (not outermost)
+  value for the given variable. Fixes
+  `#19 <https://github.com/zopefoundation/zope.tales/issues/19>`_.
 
 
 5.0.1 (2019-06-26)
