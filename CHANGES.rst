@@ -5,7 +5,11 @@
 5.0.2 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Cleanups for Plone 5.2:
+  * in path alternatives, whitespace can now surround ``|``,
+  * non-ASCII in ``SubPathExpr`` now raises a ``CompilerError``
+    (instead of a ``UnicodeEncodeError``; to be compatible with
+    the ``chameleon`` template engine).
 
 
 5.0.1 (2019-06-26)
