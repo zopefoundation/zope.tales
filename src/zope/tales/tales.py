@@ -744,12 +744,7 @@ class Context(object):
             vars[name] = value
 
     def getValue(self, name, default=None):
-        value = default
-        for vars in self._vars_stack:
-            value = vars.get(name, default)
-            if value is not default:
-                break
-        return value
+        return self.vars.get(name, default)
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
