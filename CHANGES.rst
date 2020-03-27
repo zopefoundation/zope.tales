@@ -2,7 +2,7 @@
  Changes
 =========
 
-5.0.2 (unreleased)
+5.0.2 (2020-03-27)
 ==================
 
 - Cleanups for Plone 5.2:
