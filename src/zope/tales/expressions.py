@@ -67,7 +67,13 @@ class SubPathExpr(object):
         # Parse path
         compiledpath = []
         currentpath = []
-        for element in str(path).strip().split('/'):
+        try:
+           path = str(path)
+        except Exception as e:
+            raise engine.getCompilerError()(
+                'could not convert %r to `str`: %s: %s'
+                % (path, e.__class__.__name__, str(e)))
+        for element in path.strip().split('/'):
             if not element:
                 raise engine.getCompilerError()(
                     'Path element may not be empty in %r' % path)
@@ -242,7 +248,7 @@ class PathExpr(object):
 
 
 _interp = re.compile(
-    r'\$(%(n)s)|\${(%(n)s(?:/[^}|]*)*(?:\|%(n)s(?:/[^}|]*)*)*)}'
+    r'\$(%(n)s)|\${(%(n)s(?:/[^}|]*)*(?:\|\s*%(n)s(?:/[^}|]*)*)*)}'
     % {'n': NAME_RE})
 
 
