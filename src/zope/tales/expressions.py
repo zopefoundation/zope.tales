@@ -68,7 +68,7 @@ class SubPathExpr(object):
         compiledpath = []
         currentpath = []
         try:
-           path = str(path)
+            path = str(path)
         except Exception as e:
             raise engine.getCompilerError()(
                 'could not convert %r to `str`: %s: %s'

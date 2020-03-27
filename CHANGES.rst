@@ -6,7 +6,9 @@
 ==================
 
 - Cleanups for Plone 5.2:
+
   * in path alternatives, whitespace can now surround ``|``,
+
   * non-ASCII in ``SubPathExpr`` now raises a ``CompilerError``
     (instead of a ``UnicodeEncodeError``; to be compatible with
     the ``chameleon`` template engine).

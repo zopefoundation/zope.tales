@@ -173,7 +173,7 @@ class TestParsedExpressions(ExpressionTestBase):
     def testNonAsciiPath(self):
         error = self.engine.getCompilerError()
         with self.assertRaises(error):
-            expr = self.engine.compile(u'path: ä')
+            self.engine.compile(u'path: ä')
 
     def test_path_CONTEXTS(self):
         self.context.contexts = 42
