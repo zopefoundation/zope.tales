@@ -392,7 +392,7 @@ class TestParsedExpressions(ExpressionTestBase):
         from ..expressions import PathExpr, SubPathExpr
 
         class MySubPathExpr(SubPathExpr):
-            ALLOWED_BUILTINS = dict(True=True, False=False)
+            ALLOWED_BUILTINS = {'True':True, 'False':False, 'x':None}
 
         class MyPathExpr(PathExpr):
             SUBEXPR_FACTORY = MySubPathExpr
@@ -408,6 +408,7 @@ class TestParsedExpressions(ExpressionTestBase):
         self.assertFalse(eval("False"))
         with self.assertRaises(KeyError):
             eval("None")
+        self.assertIsNotNone(eval("x"))  # variable before builtin
 
 
 class FunctionTests(ExpressionTestBase):
