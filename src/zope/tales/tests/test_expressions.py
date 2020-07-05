@@ -392,7 +392,7 @@ class TestParsedExpressions(ExpressionTestBase):
         from ..expressions import PathExpr, SubPathExpr
 
         class MySubPathExpr(SubPathExpr):
-            ALLOWED_BUILTINS = {'True':True, 'False':False, 'x':None}
+            ALLOWED_BUILTINS = {'True': True, 'False': False, 'x': None}
 
         class MyPathExpr(PathExpr):
             SUBEXPR_FACTORY = MySubPathExpr
