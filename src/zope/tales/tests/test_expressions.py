@@ -387,6 +387,28 @@ class TestParsedExpressions(ExpressionTestBase):
             "Invalid variable name"
         )
 
+    def test_builtins_in_path(self):
+        from ..tales import ExpressionEngine
+        from ..expressions import PathExpr, SubPathExpr
+
+        class MySubPathExpr(SubPathExpr):
+            ALLOWED_BUILTINS = dict(True=True, False=False)
+
+        class MyPathExpr(PathExpr):
+            SUBEXPR_FACTORY = MySubPathExpr
+
+        engine = ExpressionEngine()
+        for pt in MyPathExpr._default_type_names:
+            engine.registerType(pt, MyPathExpr)
+
+        def eval(expr):
+            return engine.compile(expr)(self.context)
+
+        self.assertTrue(eval("True"))
+        self.assertFalse(eval("False"))
+        with self.assertRaises(KeyError):
+            eval("None")
+
 
 class FunctionTests(ExpressionTestBase):
 
