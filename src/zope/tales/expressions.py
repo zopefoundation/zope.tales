@@ -60,6 +60,8 @@ class SubPathExpr(object):
     Implementation of a single path expression.
     """
 
+    ALLOWED_BUILTINS = {}
+
     def __init__(self, path, traverser, engine):
         self._traverser = traverser
         self._engine = engine
@@ -137,7 +139,12 @@ class SubPathExpr(object):
         if base == 'CONTEXTS' or not base:  # Special base name
             ob = econtext.contexts
         else:
-            ob = vars[base]
+            try:
+                ob = vars[base]
+            except KeyError:
+                ob = self.ALLOWED_BUILTINS.get(base, _marker)
+                if ob is _marker:
+                    raise
         if isinstance(ob, DeferWrapper):
             ob = ob()
 
@@ -177,6 +184,8 @@ class PathExpr(object):
         'nocall',
     )
 
+    SUBEXPR_FACTORY = SubPathExpr
+
     def __init__(self, name, expr, engine, traverser=simpleTraverse):
         self._s = expr
         self._name = name
@@ -192,7 +201,7 @@ class PathExpr(object):
                 add(engine.compile('|'.join(paths[i:]).lstrip()))
                 self._hybrid = True
                 break
-            add(SubPathExpr(path, traverser, engine)._eval)
+            add(self.SUBEXPR_FACTORY(path, traverser, engine)._eval)
 
     def _exists(self, econtext):
         for expr in self._subexprs:

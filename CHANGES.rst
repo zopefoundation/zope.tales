@@ -5,7 +5,8 @@
 5.0.3 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Improve `PathExpr` reusability
+  Provide customizable support for the use of builtins in path expressions
 
 
 5.0.2 (2020-03-27)
