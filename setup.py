@@ -69,7 +69,7 @@ setup(
     ],
     url='https://github.com/zopefoundation/zope.tales',
     project_urls={
-        'Documentation': ' https://zopetales.readthedocs.io/',
+        'Documentation': 'https://zopetales.readthedocs.io/',
         'Issue Tracker': 'https://github.com/zopefoundation/zope.tales/issues',
         'Sources': 'https://github.com/zopefoundation/zope.tales',
     },
