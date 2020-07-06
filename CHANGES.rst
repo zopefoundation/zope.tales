@@ -5,6 +5,8 @@
 5.0.3 (unreleased)
 ==================
 
+- Packaging and test configuration cleanups
+
 - Improve `PathExpr` reusability
   Provide customizable support for the use of builtins in path expressions
 

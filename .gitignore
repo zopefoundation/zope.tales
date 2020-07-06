@@ -9,7 +9,11 @@ src/*.egg-info
 bin
 build
 develop-eggs
+lib/
 parts
+default.profraw
 .coverage
+coverage.xml
 htmlcov/
 docs/_build/
+pyvenv.cfg

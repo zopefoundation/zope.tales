@@ -1,6 +1,5 @@
 [run]
 source = zope.tales
-plugins = coverage_python_version
 omit =
     */flycheck_*py
 
