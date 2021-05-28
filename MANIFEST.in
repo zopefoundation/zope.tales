@@ -1,16 +1,13 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python
 include *.rst
 include *.txt
-include tox.ini
-include bootstrap.py
 include buildout.cfg
-include .travis.yml
-include .coveragerc
+include tox.ini
 
-recursive-include src *
-
-recursive-include docs *.rst
 recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs *.txt
 recursive-include docs Makefile
-recursive-include docs make.bat
 
-global-exclude *.pyc
+recursive-include src *.py
