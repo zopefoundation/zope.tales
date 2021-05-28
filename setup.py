@@ -59,6 +59,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
@@ -66,6 +67,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Framework :: Zope :: 3',
         'Framework :: Zope :: 4',
+        'Framework :: Zope :: 5',
     ],
     url='https://github.com/zopefoundation/zope.tales',
     project_urls={
