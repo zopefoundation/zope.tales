@@ -35,7 +35,7 @@ TESTS_REQUIRE = [
 
 setup(
     name='zope.tales',
-    version='5.0.2.dev0',
+    version='5.1.1.dev0',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
     description='Zope Template Application Language Expression Syntax '
@@ -58,14 +58,23 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
         'Framework :: Zope :: 3',
+        'Framework :: Zope :: 4',
+        'Framework :: Zope :: 5',
     ],
     url='https://github.com/zopefoundation/zope.tales',
+    project_urls={
+        'Documentation': 'https://zopetales.readthedocs.io/',
+        'Issue Tracker': 'https://github.com/zopefoundation/zope.tales/issues',
+        'Sources': 'https://github.com/zopefoundation/zope.tales',
+    },
     license='ZPL 2.1',
     packages=find_packages('src'),
     package_dir={'': 'src'},

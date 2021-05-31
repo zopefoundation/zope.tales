@@ -161,6 +161,20 @@ class TestParsedExpressions(ExpressionTestBase):
             expr = self.engine.compile('path:ErrorGenerator/%s|b|c/d/e' % e)
             self._check_evals_to(expr, 'boot')
 
+    def testOrPathWithSpaces(self):
+        expr = self.engine.compile('path:a | b | c/d/e')
+        self._check_evals_to(expr, 'boot')
+
+        for e in 'Undefined', 'AttributeError', 'LookupError', 'TypeError':
+            expr = self.engine.compile(
+                'path:ErrorGenerator/%s | b | c/d/e' % e)
+            self._check_evals_to(expr, 'boot')
+
+    def testNonAsciiPath(self):
+        error = self.engine.getCompilerError()
+        with self.assertRaises(error):
+            self.engine.compile(u'path: ä')
+
     def test_path_CONTEXTS(self):
         self.context.contexts = 42
         self._check_evals_to('CONTEXTS', 42)
@@ -372,6 +386,29 @@ class TestParsedExpressions(ExpressionTestBase):
             '123',
             "Invalid variable name"
         )
+
+    def test_builtins_in_path(self):
+        from ..tales import ExpressionEngine
+        from ..expressions import PathExpr, SubPathExpr
+
+        class MySubPathExpr(SubPathExpr):
+            ALLOWED_BUILTINS = {'True': True, 'False': False, 'x': None}
+
+        class MyPathExpr(PathExpr):
+            SUBEXPR_FACTORY = MySubPathExpr
+
+        engine = ExpressionEngine()
+        for pt in MyPathExpr._default_type_names:
+            engine.registerType(pt, MyPathExpr)
+
+        def eval(expr):
+            return engine.compile(expr)(self.context)
+
+        self.assertTrue(eval("True"))
+        self.assertFalse(eval("False"))
+        with self.assertRaises(KeyError):
+            eval("None")
+        self.assertIsNotNone(eval("x"))  # variable before builtin
 
 
 class FunctionTests(ExpressionTestBase):
