@@ -5,17 +5,17 @@
 5.1.1 (unreleased)
 ==================
 
-- Add support for Python 3.9.
+- Add support for Python 3.9, 3.10.
 
 
 5.1 (2020-07-06)
 ================
 
-- Packaging and test configuration cleanups
+- Packaging and test configuration cleanups.
 
 - Improve `PathExpr` reusability
   Provide customizable support for the use of builtins in path expressions
-  (`#23 <https://github.com/zopefoundation/zope.tales/issues/23>`_)
+  (`#23 <https://github.com/zopefoundation/zope.tales/issues/23>`_).
 
 
 5.0.2 (2020-03-27)
