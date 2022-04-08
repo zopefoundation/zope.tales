@@ -35,7 +35,7 @@ TESTS_REQUIRE = [
 
 setup(
     name='zope.tales',
-    version='5.1.1.dev0',
+    version='5.2.0.dev0',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
     description='Zope Template Application Language Expression Syntax '
@@ -60,6 +60,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
