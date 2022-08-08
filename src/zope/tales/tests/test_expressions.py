@@ -193,8 +193,13 @@ class TestParsedExpressions(ExpressionTestBase):
 
     def test_dynamic_invalid_variable_name(self):
         from zope.tales.tales import CompilerError
-        with self.assertRaisesRegex(CompilerError, "Invalid variable name"):
+        with self.assertRaisesRegex(
+                CompilerError, 'Invalid variable name "123"'):
             self.engine.compile('path:a/?123')
+        # Deliberate typo for the TAL construct "structure ...".
+        with self.assertRaisesRegex(
+                CompilerError, 'Invalid variable name "structured a"'):
+            self.engine.compile('structured a/b')
 
     def testOldStyleClassIsCalled(self):
         class AnOldStyleClass:

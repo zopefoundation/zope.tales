@@ -7,6 +7,9 @@
 
 - Add support for Python 3.9, 3.10.
 
+- Fix error message raised if the first element of a path expression is not
+  a valid name.
+
 
 5.1 (2020-07-06)
 ================

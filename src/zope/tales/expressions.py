@@ -124,7 +124,7 @@ class SubPathExpr(object):
         base = first[0]
         if base and not _valid_name(base):
             raise engine.getCompilerError()(
-                'Invalid variable name "%s"' % element)
+                'Invalid variable name "%s"' % base)
         self._base = base
         compiledpath[0] = first[1:]
         self._compiled_path = tuple(compiledpath)
