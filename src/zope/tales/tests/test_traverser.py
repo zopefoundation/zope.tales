@@ -14,6 +14,7 @@
 """ Tests for zope.tales.expressions.simpleTraverse
 """
 from unittest import TestCase
+
 from zope.tales.expressions import simpleTraverse
 
 

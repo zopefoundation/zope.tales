@@ -28,8 +28,14 @@ import types
 import six
 
 from zope.interface import implementer
-from zope.tales.tales import _valid_name, _parse_expr, NAME_RE, Undefined
-from zope.tales.interfaces import ITALESExpression, ITALESFunctionNamespace
+
+from zope.tales.interfaces import ITALESExpression
+from zope.tales.interfaces import ITALESFunctionNamespace
+from zope.tales.tales import NAME_RE
+from zope.tales.tales import Undefined
+from zope.tales.tales import _parse_expr
+from zope.tales.tales import _valid_name
+
 
 Undefs = (Undefined, AttributeError, LookupError, TypeError)
 

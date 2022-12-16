@@ -17,14 +17,16 @@ An implementation of a TAL expression engine
 """
 import re
 
+
 try:
     from html import escape
 except ImportError:  # pragma: PY2
     from cgi import escape
 
-from zope.interface import implementer
-from zope.interface import Interface
 import six
+
+from zope.interface import Interface
+from zope.interface import implementer
 
 from zope.tales.interfaces import ITALESIterator
 
@@ -43,9 +45,9 @@ class ITALExpressionErrorInfo(Interface):
 
 try:
     # Override with real, if present
-    from zope.tal.interfaces import (ITALExpressionEngine,  # noqa: F811
-                                     ITALExpressionCompiler,
-                                     ITALExpressionErrorInfo)
+    from zope.tal.interfaces import ITALExpressionCompiler  # noqa: F811
+    from zope.tal.interfaces import ITALExpressionEngine  # noqa: F811
+    from zope.tal.interfaces import ITALExpressionErrorInfo  # noqa: F811
 except ImportError:
     pass
 

@@ -15,14 +15,14 @@
 
 Each expression engine can have its own expression types and base names.
 """
-from zope.tales.tales import ExpressionEngine
-from zope.tales.expressions import PathExpr
-from zope.tales.expressions import StringExpr
-from zope.tales.expressions import NotExpr
 from zope.tales.expressions import DeferExpr
 from zope.tales.expressions import LazyExpr
+from zope.tales.expressions import NotExpr
+from zope.tales.expressions import PathExpr
 from zope.tales.expressions import SimpleModuleImporter
+from zope.tales.expressions import StringExpr
 from zope.tales.pythonexpr import PythonExpr
+from zope.tales.tales import ExpressionEngine
 
 
 def DefaultEngine():
