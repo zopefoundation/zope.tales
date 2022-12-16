@@ -1,5 +1,6 @@
-import six
 import unittest
+
+import six
 
 
 class TestCase(unittest.TestCase):

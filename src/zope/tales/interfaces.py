@@ -16,6 +16,7 @@ Interface that describes the TALES implementation.
 """
 from zope.interface import Interface
 
+
 try:
     from zope.tal.interfaces import ITALIterator
 except ImportError:

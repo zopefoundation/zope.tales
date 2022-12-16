@@ -13,16 +13,18 @@
 ##############################################################################
 """TALES Tests
 """
-from doctest import DocTestSuite
-import unittest
 import re
 import sys
+import unittest
+from doctest import DocTestSuite
 
 import six
+
+from zope.testing import renormalizing
+
+import zope.tales.tests
 from zope.tales import tales
 from zope.tales.tests.simpleexpr import SimpleExpr
-from zope.testing import renormalizing
-import zope.tales.tests
 
 
 class TestIterator(unittest.TestCase):

@@ -14,14 +14,17 @@
 ##############################################################################
 """Default TALES expression implementations tests.
 """
-import six
 import unittest
 
+import six
+
+from zope.interface import implementer
+
+import zope.tales.tests
 from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.tales.tales import Undefined
-from zope.interface import implementer
-import zope.tales.tests
+
 
 text_type = str if str is not bytes else unicode  # noqa PY2
 
@@ -341,8 +344,8 @@ class TestParsedExpressions(ExpressionTestBase):
         check('string:foo${ab/cd | c/d | e/f/}bar')
 
     def test_defer_expression_returns_wrapper(self):
-        from zope.tales.expressions import DeferWrapper
         from zope.tales.expressions import DeferExpr
+        from zope.tales.expressions import DeferWrapper
         expr = self.engine.compile('defer: B')
         self.assertIsInstance(expr, DeferExpr)
         self.assertEqual(str(expr), "<DeferExpr 'B'>")
@@ -361,8 +364,8 @@ class TestParsedExpressions(ExpressionTestBase):
         self._check_evals_to('deferred', self.context.vars['b'])
 
     def test_lazy_expression_returns_wrapper(self):
-        from zope.tales.expressions import LazyWrapper
         from zope.tales.expressions import LazyExpr
+        from zope.tales.expressions import LazyWrapper
         expr = self.engine.compile('lazy: b')
         self.assertIsInstance(expr, LazyExpr)
         self.assertEqual(repr(expr), "lazy:'b'")
@@ -393,8 +396,9 @@ class TestParsedExpressions(ExpressionTestBase):
         )
 
     def test_builtins_in_path(self):
+        from ..expressions import PathExpr
+        from ..expressions import SubPathExpr
         from ..tales import ExpressionEngine
-        from ..expressions import PathExpr, SubPathExpr
 
         class MySubPathExpr(SubPathExpr):
             ALLOWED_BUILTINS = {'True': True, 'False': False, 'x': None}

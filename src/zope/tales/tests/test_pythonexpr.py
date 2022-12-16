@@ -12,14 +12,14 @@
 #
 ##############################################################################
 
-import six
 import unittest
 
-from zope.tales.engine import Engine
-from zope.tales.tales import Context
+import six
 
-from zope.tales.pythonexpr import PythonExpr
+from zope.tales.engine import Engine
 from zope.tales.pythonexpr import ExprTypeProxy
+from zope.tales.pythonexpr import PythonExpr
+from zope.tales.tales import Context
 
 
 class TestPythonExpr(unittest.TestCase):
