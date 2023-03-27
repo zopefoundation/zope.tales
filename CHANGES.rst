@@ -11,6 +11,10 @@
 5.2 (2022-08-24)
 ================
 
+- ``tales.Context.getValue`` now returns the innermost (not outermost)
+  value for the given variable. Fixes
+  `#19 <https://github.com/zopefoundation/zope.tales/issues/19>`_.
+
 - Add support for Python 3.9, 3.10.
 
 - Fix error message raised if the first element of a path expression is not
