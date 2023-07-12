@@ -22,10 +22,6 @@ the local expression namespace.
 
 """
 import re
-import sys
-import types
-
-import six
 
 from zope.interface import implementer
 
@@ -41,8 +37,6 @@ Undefs = (Undefined, AttributeError, LookupError, TypeError)
 
 _marker = object()
 namespace_re = re.compile(r'(\w+):(.+)')
-
-PY2 = sys.version_info[0] == 2
 
 
 def simpleTraverse(object, path_items, econtext):
@@ -61,7 +55,7 @@ def simpleTraverse(object, path_items, econtext):
     return object
 
 
-class SubPathExpr(object):
+class SubPathExpr:
     """
     Implementation of a single path expression.
     """
@@ -122,7 +116,7 @@ class SubPathExpr(object):
             # check for initial function
             raise engine.getCompilerError()(
                 'Namespace function specified in first subpath element')
-        elif isinstance(first, six.string_types):
+        elif isinstance(first, str):
             # check for initial ?
             raise engine.getCompilerError()(
                 'Dynamic name specified in first subpath element')
@@ -157,11 +151,11 @@ class SubPathExpr(object):
         for element in compiled_path:
             if isinstance(element, tuple):
                 ob = self._traverser(ob, element, econtext)
-            elif isinstance(element, six.string_types):
+            elif isinstance(element, str):
                 val = vars[element]
                 # If the value isn't a string, assume it's a sequence
                 # of path names.
-                if isinstance(val, six.string_types):
+                if isinstance(val, str):
                     val = (val,)
                 ob = self._traverser(ob, val, econtext)
             elif callable(element):
@@ -175,7 +169,7 @@ class SubPathExpr(object):
 
 
 @implementer(ITALESExpression)
-class PathExpr(object):
+class PathExpr:
     """
     One or more :class:`subpath expressions <SubPathExpr>`, separated
     by ``|``.
@@ -243,12 +237,10 @@ class PathExpr(object):
         # proxied (and security proxies report themselves callable, no
         # matter what the underlying object is).  We therefore check
         # for the __call__ attribute, but not with hasattr as that
-        # eats babies, err, exceptions.  In addition to that, we
-        # support calling old style classes which don't have a
-        # __call__.
+        # eats babies, err, exceptions.
         if getattr(ob, '__call__', _marker) is not _marker:
             return ob()
-        return ob() if PY2 and isinstance(ob, types.ClassType) else ob
+        return ob
 
     def __call__(self, econtext):
         if self._name == 'exists':
@@ -256,10 +248,10 @@ class PathExpr(object):
         return self._eval(econtext)
 
     def __str__(self):
-        return '%s expression (%s)' % (self._name, repr(self._s))
+        return '{} expression ({})'.format(self._name, repr(self._s))
 
     def __repr__(self):
-        return '<PathExpr %s:%s>' % (self._name, repr(self._s))
+        return '<PathExpr {}:{}>'.format(self._name, repr(self._s))
 
 
 _interp = re.compile(
@@ -268,7 +260,7 @@ _interp = re.compile(
 
 
 @implementer(ITALESExpression)
-class StringExpr(object):
+class StringExpr:
     """
     An expression that produces a string.
 
@@ -318,7 +310,7 @@ class StringExpr(object):
 
 
 @implementer(ITALESExpression)
-class NotExpr(object):
+class NotExpr:
     """
     An expression that negates the boolean value
     of its sub-expression.
@@ -335,7 +327,7 @@ class NotExpr(object):
         return '<NotExpr %s>' % repr(self._s)
 
 
-class DeferWrapper(object):
+class DeferWrapper:
     def __init__(self, expr, econtext):
         self._expr = expr
         self._econtext = econtext
@@ -348,7 +340,7 @@ class DeferWrapper(object):
 
 
 @implementer(ITALESExpression)
-class DeferExpr(object):
+class DeferExpr:
     """
     An expression that will defer evaluation of the sub-expression
     until necessary, preserving the execution context it was created
@@ -404,7 +396,7 @@ class LazyExpr(DeferExpr):
         return 'lazy:%s' % repr(self._s)
 
 
-class SimpleModuleImporter(object):
+class SimpleModuleImporter:
     """Minimal module importer with no security."""
 
     def __getitem__(self, module):

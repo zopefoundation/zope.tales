@@ -16,7 +16,7 @@
 import types
 
 
-class PythonExpr(object):
+class PythonExpr:
     """
     Evaluates a python expression by calling :func:`eval` after
     compiling it with :func:`compile`.
@@ -36,7 +36,7 @@ class PythonExpr(object):
             raise engine.getCompilerError()(str(e))
         self._code = code
         self._varnames = code.co_names
-        # In Python 3, variables used inside list comprehensions are not
+        # Variables used inside list comprehensions are not
         # directly available via co_names.
         for const in code.co_consts:
             if isinstance(const, types.CodeType):
@@ -79,7 +79,7 @@ class PythonExpr(object):
         return '<PythonExpr %s>' % self.text
 
 
-class ExprTypeProxy(object):
+class ExprTypeProxy:
     '''Class that proxies access to an expression type handler'''
     def __init__(self, name, handler, econtext):
         self._name = name

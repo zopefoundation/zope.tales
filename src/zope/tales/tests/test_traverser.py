@@ -18,12 +18,12 @@ from unittest import TestCase
 from zope.tales.expressions import simpleTraverse
 
 
-class AttrTraversable(object):
+class AttrTraversable:
     """Traversable by attribute access"""
     attr = 'foo'
 
 
-class ItemTraversable(object):
+class ItemTraversable:
     """Traversable by item access"""
 
     def __getitem__(self, name):

@@ -14,8 +14,6 @@
 
 import unittest
 
-import six
-
 from zope.tales.engine import Engine
 from zope.tales.pythonexpr import ExprTypeProxy
 from zope.tales.pythonexpr import PythonExpr
@@ -34,11 +32,7 @@ class TestPythonExpr(unittest.TestCase):
 
     def test_init_listcomp(self):
         expr = PythonExpr(None, '[f for f in foo if exists(f)]', None)
-        if six.PY2:
-            self.assertEqual(
-                expr._varnames, ('foo', 'f', 'exists'))  # pragma: no cover
-        else:
-            self.assertEqual(expr._varnames, ('foo', 'exists'))
+        self.assertEqual(expr._varnames, ('foo', 'exists'))
 
     def test_repr_str(self):
         expr = PythonExpr(None, 'a', None)

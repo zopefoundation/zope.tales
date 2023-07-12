@@ -13,16 +13,10 @@
 ##############################################################################
 """TALES Tests
 """
-import re
 import sys
 import unittest
 from doctest import DocTestSuite
 
-import six
-
-from zope.testing import renormalizing
-
-import zope.tales.tests
 from zope.tales import tales
 from zope.tales.tests.simpleexpr import SimpleExpr
 
@@ -114,7 +108,7 @@ class TALESTests(unittest.TestCase):
     def testContext_evaluateText(self):
         # Test use of Context
         se = self.getContext().evaluateText('simple:x')
-        self.assertTrue(isinstance(se, six.text_type))
+        self.assertTrue(isinstance(se, str))
         self.assertEqual(se, "('simple', 'x')")
 
     def test_context_createErrorInfo(self):
@@ -155,7 +149,7 @@ class TALESTests(unittest.TestCase):
         ctxt.endScope()
 
 
-class TestExpressionEngine(zope.tales.tests.TestCase):
+class TestExpressionEngine(unittest.TestCase):
 
     def setUp(self):
         self.engine = tales.ExpressionEngine()
@@ -227,7 +221,7 @@ class TestContext(unittest.TestCase):
     def test_evaluate_boolean(self):
         # Make sure it always returns a regular bool, no matter
         # what the class returns
-        class WithCustomBool(object):
+        class WithCustomBool:
 
             def __init__(self, value):
                 self.value = value
@@ -235,13 +229,10 @@ class TestContext(unittest.TestCase):
             def __bool__(self):
                 return self.value
 
-            __nonzero__ = __bool__
-
-        # On Python 2, you can return only bool or int from __nonzero__
-        # Python 3 requires just a bool from __bool__. This is true whether
+        # Python requires just a bool from __bool__. This is true whether
         # you pass it to the bool builtin on the not operator
-        # On both 2 and 3, you cannot subclass bool()
-        bool_value = 1 if str is bytes else True
+        # You cannot subclass bool()
+        bool_value = True
         self.context.vars['it'] = WithCustomBool(bool_value)
         self.assertEqual(bool_value, self.context.evaluate('it').__bool__())
         self.assertIs(True, self.context.evaluateBoolean('it'))
@@ -251,8 +242,8 @@ class TestContext(unittest.TestCase):
         self.assertIsNone(self.context.evaluateText('it'))
 
     def test_evaluateText_text(self):
-        self.context.vars['it'] = u'text'
-        self.assertEqual(u'text', self.context.evaluateText("it"))
+        self.context.vars['it'] = 'text'
+        self.assertEqual('text', self.context.evaluateText("it"))
 
     def test_traceback_supplement(self):
         def raises(self):
@@ -291,11 +282,10 @@ class TestContext(unittest.TestCase):
         self.assertIn('modules', self.context.contexts)
 
     def test_translate(self):
-        import six
-        self.assertIsInstance(self.context.translate(b'abc'), six.text_type)
+        self.assertIsInstance(self.context.translate(b'abc'), str)
 
 
-class Harness(object):
+class Harness:
     def __init__(self, testcase):
         self._callstack = []
         self._testcase = testcase
@@ -311,7 +301,7 @@ class Harness(object):
         return HarnessMethod(self, name)
 
 
-class HarnessMethod(object):
+class HarnessMethod:
 
     def __init__(self, harness, name):
         self._harness = harness
@@ -339,11 +329,6 @@ class HarnessMethod(object):
 
 
 def test_suite():
-    checker = renormalizing.RENormalizing([
-        (re.compile(r"object of type 'MyIter' has no len\(\)"),
-         r"len() of unsized object"),
-    ])
     suite = unittest.defaultTestLoader.loadTestsFromName(__name__)
-    suite.addTest(DocTestSuite("zope.tales.tales",
-                               checker=checker))
+    suite.addTest(DocTestSuite("zope.tales.tales"))
     return suite

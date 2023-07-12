@@ -15,7 +15,7 @@
 """
 
 
-class SimpleExpr(object):
+class SimpleExpr:
     """Simple example of an expression type handler for testing."""
 
     def __init__(self, name, expr, engine):
@@ -26,4 +26,4 @@ class SimpleExpr(object):
         return self._name, self._expr
 
     def __repr__(self):
-        return '<SimpleExpr %s %s>' % (self._name, repr(self._expr))
+        return '<SimpleExpr {} {}>'.format(self._name, repr(self._expr))
