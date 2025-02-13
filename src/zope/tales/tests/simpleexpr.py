@@ -26,4 +26,4 @@ class SimpleExpr:
         return self._name, self._expr
 
     def __repr__(self):
-        return '<SimpleExpr {} {}>'.format(self._name, repr(self._expr))
+        return f'<SimpleExpr {self._name} {repr(self._expr)}>'

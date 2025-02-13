@@ -108,7 +108,7 @@ class TALESTests(unittest.TestCase):
     def testContext_evaluateText(self):
         # Test use of Context
         se = self.getContext().evaluateText('simple:x')
-        self.assertTrue(isinstance(se, str))
+        self.assertIsInstance(se, str)
         self.assertEqual(se, "('simple', 'x')")
 
     def test_context_createErrorInfo(self):

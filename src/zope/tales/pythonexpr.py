@@ -21,6 +21,7 @@ class PythonExpr:
     Evaluates a python expression by calling :func:`eval` after
     compiling it with :func:`compile`.
     """
+
     def __init__(self, name, expr, engine):
         """
         :param str expr: The Python expression.
@@ -81,6 +82,7 @@ class PythonExpr:
 
 class ExprTypeProxy:
     '''Class that proxies access to an expression type handler'''
+
     def __init__(self, name, handler, econtext):
         self._name = name
         self._handler = handler

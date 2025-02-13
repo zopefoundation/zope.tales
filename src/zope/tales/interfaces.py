@@ -19,7 +19,7 @@ from zope.interface import Interface
 
 try:
     from zope.tal.interfaces import ITALIterator
-except ImportError:
+except ModuleNotFoundError:
     class ITALIterator(Interface):
         """Stub: See zope.tal.interfaces.ITALIterator"""
 

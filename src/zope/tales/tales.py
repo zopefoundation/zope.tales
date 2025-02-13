@@ -41,7 +41,7 @@ try:
     from zope.tal.interfaces import ITALExpressionCompiler  # noqa: F811
     from zope.tal.interfaces import ITALExpressionEngine  # noqa: F811
     from zope.tal.interfaces import ITALExpressionErrorInfo  # noqa: F811
-except ImportError:
+except ModuleNotFoundError:
     pass
 
 
