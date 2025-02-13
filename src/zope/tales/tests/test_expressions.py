@@ -204,7 +204,7 @@ class TestParsedExpressions(ExpressionTestBase):
             pass
         self.context.vars['oldstyleclass'] = AnOldStyleClass
         expr = self.engine.compile('oldstyleclass')
-        self.assertTrue(isinstance(expr(self.context), AnOldStyleClass))
+        self.assertIsInstance(expr(self.context), AnOldStyleClass)
 
     def testString(self):
         expr = self.engine.compile('string:Fred')
@@ -538,13 +538,13 @@ class TestSimpleModuleImporter(unittest.TestCase):
         self.assertIs(os.path, imp['os.path'])
 
     def test_no_such_toplevel_possible(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaises(ModuleNotFoundError):
             self._makeOne()['this cannot exist']
 
     def test_no_such_submodule_not_package(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaises(ModuleNotFoundError):
             self._makeOne()['zope.tales.tests.test_expressions.submodule']
 
     def test_no_such_submodule_package(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaises(ModuleNotFoundError):
             self._makeOne()['zope.tales.tests.submodule']

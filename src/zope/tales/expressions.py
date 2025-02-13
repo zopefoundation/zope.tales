@@ -248,10 +248,10 @@ class PathExpr:
         return self._eval(econtext)
 
     def __str__(self):
-        return '{} expression ({})'.format(self._name, repr(self._s))
+        return f'{self._name} expression ({repr(self._s)})'
 
     def __repr__(self):
-        return '<PathExpr {}:{}>'.format(self._name, repr(self._s))
+        return f'<PathExpr {self._name}:{repr(self._s)}>'
 
 
 _interp = re.compile(
@@ -389,6 +389,7 @@ class LazyExpr(DeferExpr):
     This is like :class:`DeferExpr`, but caches the result of
     evaluating the expression.
     """
+
     def __call__(self, econtext):
         return LazyWrapper(self._c, econtext)
 
