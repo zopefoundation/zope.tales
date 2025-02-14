@@ -9,6 +9,10 @@
 
 - Drop support for Python 3.7, 3.8.
 
+- ``tales.Context.getValue`` now returns the innermost (not outermost)
+  value for the given variable. Fixes
+  `#19 <https://github.com/zopefoundation/zope.tales/issues/19>`_.
+
 
 6.0 (2023-07-12)
 ================

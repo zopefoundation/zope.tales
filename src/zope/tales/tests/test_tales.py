@@ -130,6 +130,7 @@ class TALESTests(unittest.TestCase):
 
         c = ctxt.vars
         self.assertEqual(c['v1'], 1, 'Variable "v1"')
+        self.assertEqual(ctxt.getValue('v1'), 1, 'Variable "v1"')
 
         ctxt.beginScope()
         ctxt.setLocal('v1', 3)
@@ -137,14 +138,19 @@ class TALESTests(unittest.TestCase):
 
         c = ctxt.vars
         self.assertEqual(c['v1'], 3, 'Inner scope')
+        self.assertEqual(ctxt.getValue('v1'), 3, 'Inner scope')
         self.assertEqual(c['v2'], 2, 'Outer scope')
+        self.assertEqual(ctxt.getValue('v2'), 2, 'Outer scope')
         self.assertEqual(c['g'], 1, 'Global')
+        self.assertEqual(ctxt.getValue('g'), 1, 'Global')
 
         ctxt.endScope()
 
         c = ctxt.vars
         self.assertEqual(c['v1'], 1, "Uncovered local")
+        self.assertEqual(ctxt.getValue('v1'), 1, "Uncovered local")
         self.assertEqual(c['g'], 1, "Global from inner scope")
+        self.assertEqual(ctxt.getValue('g'), 1, "Global from inner scope")
 
         ctxt.endScope()
 
@@ -216,7 +222,7 @@ class TestContext(unittest.TestCase):
         self.context.vars['it'] = 1
         self.context.beginScope()
         self.context.vars['it'] = 2
-        self.assertEqual(self.context.getValue('it'), 1)
+        self.assertEqual(self.context.getValue('it'), 2)
 
     def test_evaluate_boolean(self):
         # Make sure it always returns a regular bool, no matter

@@ -737,12 +737,16 @@ class Context:
             vars[name] = value
 
     def getValue(self, name, default=None):
-        value = default
-        for vars in self._vars_stack:
-            value = vars.get(name, default)
-            if value is not default:
-                break
-        return value
+        """return the current value of variable *name* or *default*."""
+        # ``beginScope`` puts a copy of all variables into ``vars``
+        #  and pushes it onto ``_vars_stack``,
+        # ``endScope`` pops the last element of ``vars_stack`` into ``vars``,
+        # ``setGlobal`` updates all variable bindings in ``_vars_stack``
+        # (and thereby, implicitly, ``vars``).
+        # Consequently, the current value of a variable can
+        # always be found in ``vars``
+        # (no need to iterate over ``_vars_stack``).
+        return self.vars.get(name, default)
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
