@@ -16,15 +16,10 @@
 An implementation of a TAL expression engine
 """
 import re
+from html import escape
 
-try:
-    from html import escape
-except ImportError:  # pragma: PY2
-    from cgi import escape
-
-from zope.interface import implementer
 from zope.interface import Interface
-import six
+from zope.interface import implementer
 
 from zope.tales.interfaces import ITALESIterator
 
@@ -43,10 +38,10 @@ class ITALExpressionErrorInfo(Interface):
 
 try:
     # Override with real, if present
-    from zope.tal.interfaces import (ITALExpressionEngine,  # noqa: F811
-                                     ITALExpressionCompiler,
-                                     ITALExpressionErrorInfo)
-except ImportError:
+    from zope.tal.interfaces import ITALExpressionCompiler  # noqa: F811
+    from zope.tal.interfaces import ITALExpressionEngine  # noqa: F811
+    from zope.tal.interfaces import ITALExpressionErrorInfo  # noqa: F811
+except ModuleNotFoundError:
     pass
 
 
@@ -75,7 +70,7 @@ _default = object()
 
 
 @implementer(ITALESIterator)
-class Iterator(object):
+class Iterator:
     """
     TALES Iterator.
 
@@ -104,17 +99,17 @@ class Iterator(object):
         An iterator works as well:
 
         >>> it = Iterator('foo', {"apple":1, "pear":1, "orange":1}, context)
-        >>> it.next()
+        >>> next(it)
         True
 
         >>> it = Iterator('foo', {}, context)
-        >>> it.next()
+        >>> next(it)
         False
 
         >>> it = Iterator('foo', iter((1, 2, 3)), context)
-        >>> it.next()
+        >>> next(it)
         True
-        >>> it.next()
+        >>> next(it)
         True
 
         """
@@ -140,37 +135,37 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> bool(it.next())
+        >>> bool(next(it))
         True
         >>> context.vars['foo']
         'apple'
-        >>> bool(it.next())
+        >>> bool(next(it))
         True
         >>> context.vars['foo']
         'pear'
-        >>> bool(it.next())
+        >>> bool(next(it))
         True
         >>> context.vars['foo']
         'orange'
-        >>> bool(it.next())
+        >>> bool(next(it))
         False
 
         >>> it = Iterator('foo', {"apple":1, "pear":1, "orange":1}, context)
-        >>> bool(it.next())
+        >>> bool(next(it))
         True
-        >>> bool(it.next())
+        >>> bool(next(it))
         True
-        >>> bool(it.next())
+        >>> bool(next(it))
         True
-        >>> bool(it.next())
+        >>> bool(next(it))
         False
 
         >>> it = Iterator('foo', (), context)
-        >>> bool(it.next())
+        >>> bool(next(it))
         False
 
         >>> it = Iterator('foo', {}, context)
-        >>> bool(it.next())
+        >>> bool(next(it))
         False
 
 
@@ -190,8 +185,6 @@ class Iterator(object):
         self._setLocal(self._name, v)
         return True
 
-    next = __next__  # Python 2 compatibility
-
     def index(self):
         """Get the iterator index
 
@@ -201,15 +194,15 @@ class Iterator(object):
         Traceback (most recent call last):
         ...
         TypeError: No iteration position
-        >>> int(bool(it.next()))
+        >>> int(bool(next(it)))
         1
         >>> it.index()
         0
-        >>> int(bool(it.next()))
+        >>> int(bool(next(it)))
         1
         >>> it.index()
         1
-        >>> int(bool(it.next()))
+        >>> int(bool(next(it)))
         1
         >>> it.index()
         2
@@ -224,15 +217,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> int(bool(it.next()))
+        >>> int(bool(next(it)))
         1
         >>> it.number()
         1
-        >>> int(bool(it.next()))
+        >>> int(bool(next(it)))
         1
         >>> it.number()
         2
-        >>> int(bool(it.next()))
+        >>> int(bool(next(it)))
         1
         >>> it.number()
         3
@@ -244,15 +237,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.even()
         True
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.even()
         False
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.even()
         True
@@ -264,15 +257,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.odd()
         False
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.odd()
         True
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.odd()
         False
@@ -284,15 +277,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.parity()
         'odd'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.parity()
         'even'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.parity()
         'odd'
@@ -310,15 +303,15 @@ class Iterator(object):
         Traceback (most recent call last):
         ...
         TypeError: No iteration position
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.letter()
         'a'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.letter()
         'b'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.letter()
         'c'
@@ -338,15 +331,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.Letter()
         'A'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.Letter()
         'B'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.Letter()
         'C'
@@ -361,15 +354,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.Roman()
         'I'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.Roman()
         'II'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.Roman()
         'III'
@@ -386,15 +379,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.roman()
         'i'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.roman()
         'ii'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.roman()
         'iii'
@@ -406,15 +399,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.start()
         True
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.start()
         False
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.start()
         False
@@ -422,7 +415,7 @@ class Iterator(object):
         >>> it = Iterator('foo', {}, context)
         >>> it.start()
         False
-        >>> it.next()
+        >>> next(it)
         False
         >>> it.start()
         False
@@ -434,15 +427,15 @@ class Iterator(object):
 
         >>> context = Context(ExpressionEngine(), {})
         >>> it = Iterator('foo', ("apple", "pear", "orange"), context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.end()
         False
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.end()
         False
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.end()
         True
@@ -450,7 +443,7 @@ class Iterator(object):
         >>> it = Iterator('foo', {}, context)
         >>> it.end()
         False
-        >>> it.next()
+        >>> next(it)
         False
         >>> it.end()
         False
@@ -466,21 +459,21 @@ class Iterator(object):
         Traceback (most recent call last):
         ...
         TypeError: No iteration position
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.item()
         'apple'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.item()
         'pear'
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.item()
         'orange'
 
         >>> it = Iterator('foo', {1:2}, context)
-        >>> it.next()
+        >>> next(it)
         True
         >>> it.item()
         1
@@ -527,7 +520,7 @@ class Iterator(object):
 
 
 @implementer(ITALExpressionErrorInfo)
-class ErrorInfo(object):
+class ErrorInfo:
     """Information about an exception passed to an on-error handler."""
 
     # XXX: This is a duplicate of zope.tal.taldefs.ErrorInfo
@@ -544,7 +537,7 @@ class ErrorInfo(object):
 
 
 @implementer(ITALExpressionCompiler)
-class ExpressionEngine(object):
+class ExpressionEngine:
     """
     Expression compiler, an implementation of
     :class:`zope.tal.interfaces.ITALExpressionCompiler`.
@@ -676,7 +669,7 @@ class ExpressionEngine(object):
 
 
 @implementer(ITALExpressionEngine)
-class Context(object):
+class Context:
     """
     Expression engine, an implementation of
     :class:`zope.tal.interfaces.ITALExpressionEngine`.
@@ -793,10 +786,10 @@ class Context(object):
         text = self.evaluate(expr)
         if text is self.getDefault() or text is None:
             return text
-        if isinstance(text, six.string_types):
+        if isinstance(text, str):
             # text could already be something text-ish, e.g. a Message object
             return text
-        return six.text_type(text)
+        return str(text)
 
     evaluateStructure = evaluate
 
@@ -818,10 +811,10 @@ class Context(object):
     def translate(self, msgid, domain=None, mapping=None, default=None):
         # custom Context implementations are supposed to customize
         # this to call whichever translation routine they want to use
-        return six.text_type(msgid)
+        return str(msgid)
 
 
-class TALESTracebackSupplement(object):
+class TALESTracebackSupplement:
     """Implementation of zope.exceptions.ITracebackSupplement"""
 
     def __init__(self, context, expression):

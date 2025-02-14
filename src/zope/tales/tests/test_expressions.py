@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 # Copyright (c) 2001, 2002 Zope Foundation and Contributors.
@@ -14,19 +13,19 @@
 ##############################################################################
 """Default TALES expression implementations tests.
 """
-import six
 import unittest
+
+from zope.interface import implementer
 
 from zope.tales.engine import Engine
 from zope.tales.interfaces import ITALESFunctionNamespace
 from zope.tales.tales import Undefined
-from zope.interface import implementer
-import zope.tales.tests
+
 
 text_type = str if str is not bytes else unicode  # noqa PY2
 
 
-class Data(object):
+class Data:
 
     def __init__(self, **kw):
         self.__dict__.update(kw)
@@ -42,10 +41,10 @@ class Data(object):
     __str__ = __repr__
 
 
-class ErrorGenerator(object):
+class ErrorGenerator:
 
     def __getitem__(self, name):
-        from six.moves import builtins
+        import builtins
         if name == 'Undefined':
             e = Undefined
         else:
@@ -53,7 +52,7 @@ class ErrorGenerator(object):
         raise e('mess')
 
 
-class Callable(object):
+class Callable:
 
     def __call__(self):
         return 42
@@ -63,7 +62,7 @@ class OldStyleCallable:  # NOT object
     pass
 
 
-class ExpressionTestBase(zope.tales.tests.TestCase):
+class ExpressionTestBase(unittest.TestCase):
 
     def setUp(self):
         # Test expression compilation
@@ -86,7 +85,7 @@ class ExpressionTestBase(zope.tales.tests.TestCase):
                 B=2,
                 adapterTest=at,
                 dynamic='z',
-                eightBits=u'déjà vu'.encode('utf-8'),
+                eightBits='déjà vu'.encode(),
                 ErrorGenerator=ErrorGenerator(),
                 callable=Callable(),
                 old_callable_class=OldStyleCallable,
@@ -94,8 +93,7 @@ class ExpressionTestBase(zope.tales.tests.TestCase):
         )
 
         self.engine = Engine
-
-        self.py3BrokenEightBits = "a b'd\\xc3\\xa9j\\xc3\\xa0 vu'"
+        self.brokenEightBits = "a b'd\\xc3\\xa9j\\xc3\\xa0 vu'"
 
     def _compiled_expr(self, expr):
         return self.engine.compile(expr) if isinstance(expr, str) else expr
@@ -173,7 +171,7 @@ class TestParsedExpressions(ExpressionTestBase):
     def testNonAsciiPath(self):
         error = self.engine.getCompilerError()
         with self.assertRaises(error):
-            self.engine.compile(u'path: ä')
+            self.engine.compile('path: ä')
 
     def test_path_CONTEXTS(self):
         self.context.contexts = 42
@@ -206,7 +204,7 @@ class TestParsedExpressions(ExpressionTestBase):
             pass
         self.context.vars['oldstyleclass'] = AnOldStyleClass
         expr = self.engine.compile('oldstyleclass')
-        self.assertTrue(isinstance(expr(self.context), AnOldStyleClass))
+        self.assertIsInstance(expr(self.context), AnOldStyleClass)
 
     def testString(self):
         expr = self.engine.compile('string:Fred')
@@ -243,31 +241,26 @@ class TestParsedExpressions(ExpressionTestBase):
                           'string:${nothig/nothing|python:1}')
 
     def testString8Bits(self):
-        # Simple eight bit string interpolation should just work.
-        # Except on Py3, where we really mess it up.
+        # Simple eight bit string interpolation is a real mess.
         expr = self.engine.compile('string:a ${eightBits}')
-        expected = ('a ' + self.context.vars['eightBits']
-                    if not six.PY3 else self.py3BrokenEightBits)
-        self._check_evals_to(expr, expected)
+        self._check_evals_to(expr, self.brokenEightBits)
 
     def testStringUnicode(self):
         # Unicode string expressions should return unicode strings
-        expr = self.engine.compile(u'string:Fred')
+        expr = self.engine.compile('string:Fred')
         context = self.context
         result = expr(context)
-        self.assertEqual(result, u'Fred')
+        self.assertEqual(result, 'Fred')
         self.assertIsInstance(result, text_type)
 
     def testStringFailureWhenMixed(self):
         # Mixed Unicode and 8bit string interpolation fails with a
         # UnicodeDecodeError, assuming there is no default encoding
-        expr = self.engine.compile(u'string:a ${eightBits}')
+        expr = self.engine.compile('string:a ${eightBits}')
         with self.assertRaises(UnicodeDecodeError):
             result = expr(self.context)
-            # If we get here, we're on Python 3, which handles this
-            # poorly.
-            self.assertTrue(six.PY3)
-            self.assertEqual(result, self.py3BrokenEightBits)
+            # Python which handles this poorly.
+            self.assertEqual(result, self.brokenEightBits)
             # raise UnicodeDecodeError
             self.context.vars['eightBits'].decode('ascii')
 
@@ -341,8 +334,8 @@ class TestParsedExpressions(ExpressionTestBase):
         check('string:foo${ab/cd | c/d | e/f/}bar')
 
     def test_defer_expression_returns_wrapper(self):
-        from zope.tales.expressions import DeferWrapper
         from zope.tales.expressions import DeferExpr
+        from zope.tales.expressions import DeferWrapper
         expr = self.engine.compile('defer: B')
         self.assertIsInstance(expr, DeferExpr)
         self.assertEqual(str(expr), "<DeferExpr 'B'>")
@@ -361,8 +354,8 @@ class TestParsedExpressions(ExpressionTestBase):
         self._check_evals_to('deferred', self.context.vars['b'])
 
     def test_lazy_expression_returns_wrapper(self):
-        from zope.tales.expressions import LazyWrapper
         from zope.tales.expressions import LazyExpr
+        from zope.tales.expressions import LazyWrapper
         expr = self.engine.compile('lazy: b')
         self.assertIsInstance(expr, LazyExpr)
         self.assertEqual(repr(expr), "lazy:'b'")
@@ -393,8 +386,9 @@ class TestParsedExpressions(ExpressionTestBase):
         )
 
     def test_builtins_in_path(self):
+        from ..expressions import PathExpr
+        from ..expressions import SubPathExpr
         from ..tales import ExpressionEngine
-        from ..expressions import PathExpr, SubPathExpr
 
         class MySubPathExpr(SubPathExpr):
             ALLOWED_BUILTINS = {'True': True, 'False': False, 'x': None}
@@ -423,7 +417,7 @@ class FunctionTests(ExpressionTestBase):
 
         # a test namespace
         @implementer(ITALESFunctionNamespace)
-        class TestNameSpace(object):
+        class TestNameSpace:
 
             def __init__(self, context):
                 self.context = context
@@ -544,13 +538,13 @@ class TestSimpleModuleImporter(unittest.TestCase):
         self.assertIs(os.path, imp['os.path'])
 
     def test_no_such_toplevel_possible(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaises(ModuleNotFoundError):
             self._makeOne()['this cannot exist']
 
     def test_no_such_submodule_not_package(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaises(ModuleNotFoundError):
             self._makeOne()['zope.tales.tests.test_expressions.submodule']
 
     def test_no_such_submodule_package(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaises(ModuleNotFoundError):
             self._makeOne()['zope.tales.tests.submodule']

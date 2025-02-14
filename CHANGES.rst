@@ -2,8 +2,24 @@
  Changes
 =========
 
-5.2.0 (unreleased)
-==================
+6.1 (unreleased)
+================
+
+- Add support for Python 3.12, 3.13.
+
+- Drop support for Python 3.7, 3.8.
+
+
+6.0 (2023-07-12)
+================
+
+- Drop support for Python 2.7, 3.5, 3.6.
+
+- Add support for Python 3.11.
+
+
+5.2 (2022-08-24)
+================
 
 - ``tales.Context.getValue`` now returns the innermost (not outermost)
   value for the given variable. Fixes
