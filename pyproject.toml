@@ -62,6 +62,7 @@ docs = [
 Documentation = "https://zopetales.readthedocs.io/"
 Source = "https://github.com/zopefoundation/zope.tales"
 Issues = "https://github.com/zopefoundation/zope.tales/issues"
+Changelog = "https://github.com/zopefoundation/zope.tales/blob/master/CHANGES.rst"
 
 [tool.coverage.run]
 branch = true
