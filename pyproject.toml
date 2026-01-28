@@ -8,6 +8,62 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+
+[project]
+name = "zope.tales"
+version = "7.1.dev0"
+description = "Zope Template Application Language Expression Syntax (TALES)"
+license = "ZPL-2.1"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+    "Framework :: Zope :: 3",
+    "Framework :: Zope :: 5",
+]
+dynamic = ["readme"]
+requires-python = ">=3.10"
+authors = [
+    {name = "Zope Foundation and contributors",email = "zope-dev@zope.dev"},
+]
+maintainers = [
+    {name = "Plone Foundation and contributors",email = "zope-dev@zope.dev"},
+]
+dependencies = [
+    "zope.interface",
+]
+keywords = ["zope", "template", "xml", "tales"]
+
+[project.optional-dependencies]
+test = [
+    "zope.testing",
+    "zope.testrunner >= 6.4",
+]
+tal = ["zope.tal"]
+docs = [
+    "Sphinx",
+    "repoze.sphinx.autointerface",
+    "zope.tal",
+]
+
+[project.urls]
+Documentation = "https://zopetales.readthedocs.io/"
+Source = "https://github.com/zopefoundation/zope.tales"
+Issues = "https://github.com/zopefoundation/zope.tales/issues"
+Changelog = "https://github.com/zopefoundation/zope.tales/blob/master/CHANGES.rst"
+
 [tool.coverage.run]
 branch = true
 source = ["zope.tales"]
@@ -30,3 +86,7 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
+
