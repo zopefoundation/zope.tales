@@ -254,8 +254,15 @@ class PathExpr:
         return f'<PathExpr {self._name}:{repr(self._s)}>'
 
 
+# The path segments after a name are matched with ``[^/}|]`` (rather than
+# just ``[^}|]``) so that a slash always ends a segment instead of also
+# being consumable by it. Letting a segment swallow ``/`` characters makes
+# the surrounding ``(?:/...)*`` repetition ambiguous, and on strings that
+# ultimately fail to match (e.g. a ``${name/a/a/a...`` with a missing
+# closing brace) that ambiguity is explored exhaustively, taking time
+# exponential in the number of path segments.
 _interp = re.compile(
-    r'\$(%(n)s)|\${(%(n)s(?:/[^}|]*)*(?:\|\s*%(n)s(?:/[^}|]*)*)*)}'
+    r'\$(%(n)s)|\${(%(n)s(?:/[^/}|]*)*(?:\|\s*%(n)s(?:/[^/}|]*)*)*)}'
     % {'n': NAME_RE})
 
 

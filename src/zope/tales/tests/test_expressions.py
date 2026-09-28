@@ -333,6 +333,24 @@ class TestParsedExpressions(ExpressionTestBase):
         check('string:foo${ab/cd | c/d | e//f}bar')
         check('string:foo${ab/cd | c/d | e/f/}bar')
 
+    def test_string_interp_unterminated_path_is_not_slow(self):
+        # An interpolation that is missing its closing brace used to make
+        # the ``$name/seg/seg/...`` matching take time exponential in the
+        # number of segments, because a segment could also swallow the
+        # slashes that were supposed to separate it from its neighbours.
+        # A template with such a typo (or one built from many small,
+        # attacker-influenced pieces) should fail to compile quickly
+        # instead of hanging.
+        import time
+
+        from zope.tales.tales import CompilerError
+
+        expr = 'string:${a' + '/a' * 60
+        start = time.time()
+        with self.assertRaises(CompilerError):
+            self.engine.compile(expr)
+        self.assertLess(time.time() - start, 5)
+
     def test_defer_expression_returns_wrapper(self):
         from zope.tales.expressions import DeferExpr
         from zope.tales.expressions import DeferWrapper

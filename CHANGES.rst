@@ -11,6 +11,11 @@
 
 - Drop support for Python 3.9.
 
+- Fix a regular expression in ``StringExpr`` (the ``string:`` expression
+  type) that could take exponential time to fail on a ``${...}``
+  interpolation with an unterminated or otherwise malformed path, such as
+  ``string:${name/a/a/a/a/...`` missing its closing brace.
+
 
 7.0 (2025-09-12)
 ================
